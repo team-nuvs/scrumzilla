@@ -10,6 +10,7 @@ function App() {
 
     return (
         <div>
+            <h1>this is to test scrumzilla backend api</h1>
             {data ? data : 'Loading...'}
         </div>
     );
