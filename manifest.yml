@@ -17,3 +17,5 @@ permissions:
   scopes:
     - 'write:jira-work'
     - 'read:jira-work'
+    - 'storage:app'
+    - 'report:personal-data'
