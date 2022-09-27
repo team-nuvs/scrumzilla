@@ -25,4 +25,53 @@ active sprint > id
 
 
 all issues in active sprint
+/rest/agile/1.0/board/1/sprint/1/issue
+/rest/agile/1.0/sprint/1/issue
+
+
+jql
+/rest/api/3/search?jql=<query>
+
+calc dash %
+**req. all issues > loop > var. return calc. **
+
+sprint progress tacker
+get TODO
+status = "To Do" AND Sprint = 1 order by created DESC
+status = "Done" AND Sprint = 1 order by created DESC
+all issues - todo + done
+
+
+unassigned issues
+assignee = EMPTY AND Sprint = 1 order by created DESC
+assigned issues
+assignee != EMPTY AND Sprint = 1 order by created DESC
+
+
+issues components:
+unassigned issues
+```assignee = EMPTY AND Sprint = 1 order by created DESC```
+
+
+
+insights components:
+**req. all developers/people**
+loop>map>metrics + profile details + remark(message,status)
+
+**over assigned**
+??
+
+-----------
+/rest/api/3/project/{projectIdOrKey}
+
+/rest/api/3/project/recent
+
+
+/rest/agile/1.0/board/
+
+active sprint > id
+/board/1/sprint
+
+
+all issues in active sprint
 /rest/agile/1.0/sprint/1/issue
