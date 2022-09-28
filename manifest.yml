@@ -20,3 +20,4 @@ permissions:
     - 'storage:app'
     - 'report:personal-data'
     - 'read:sprint:jira-software'
+    - 'read:issue:jira-software'
