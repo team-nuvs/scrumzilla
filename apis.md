@@ -75,3 +75,21 @@ active sprint > id
 
 all issues in active sprint
 /rest/agile/1.0/sprint/1/issue
+
+
+
+storage
+last_sprint : val
+
+active sprint > check last sprint != > update last_sprint> update sprint count of users present.
+
+users:{
+    id:{
+        no. of sprint:
+        total_issues_assigned:
+        total_story_point:
+        label:{
+            label1 : no_of_issues
+        }
+    }
+}
