@@ -21,3 +21,5 @@ permissions:
     - 'report:personal-data'
     - 'read:sprint:jira-software'
     - 'read:issue:jira-software'
+    - 'read:jql:jira'
+    - 'read:issue-details:jira'

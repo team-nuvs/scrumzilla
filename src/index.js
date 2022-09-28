@@ -15,9 +15,10 @@ const customApi = new API();
 
 resolver.define('getText',  async (req) => {
     
-    await config.checkAndUpdateActiveSprint();
-    console.log( await customApi.getAllIssues())
-
+    // await config.checkAndUpdateActiveSprint();
+    // console.log( await customApi.getAllIssues())
+    // console.log( await customApi.getAllUnassignedIssues())
+    await customApi.setAssignee('KB-19','70121:1848c046-b89f-4f8f-a22f-846875694d2a')
     return "working bruh..."; 
 });
 
