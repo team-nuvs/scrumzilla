@@ -1,17 +1,20 @@
 import Resolver from '@forge/resolver';
-
-// import storee from './storage';
-const store = require('./storage')
+import {storage} from '@forge/api'
 
 const resolver = new Resolver();
 
+//custom modules.
+import Config from './config';
+import { test } from './storage';
 
-resolver.define('getText', async (req) => {
-    // console.log(req);
-    // await storage.set('test','second test!!');
-    // storage.set("hello", "world!!")
-    store.a()
-    return "working";
+//custom modules obj dec.
+const config = new Config();
+
+resolver.define('getText',  async (req) => {
+    
+    await config.checkAndUpdateActiveSprint();
+
+    return "working bruh..."; 
 });
 
 
