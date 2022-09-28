@@ -1,10 +1,17 @@
 import {storage} from '@forge/api';
 import api, { route } from "@forge/api";
-import Config from './config';
+
+
 
 //
-var _ = require('lodash')
-var config = new Config();
+import Config from './config';
+import Calculate from './calculation';
+
+
+//
+const _ = require('lodash')
+const config = new Config();
+const calculate = new Calculate();
 
 class API{
     ACTIVE_SPRINT_ID = -1;
@@ -79,6 +86,12 @@ class API{
 
         console.log("api : failed - setAssignee()");
         return 0;
+    }
+
+    async getMetrics(){
+        const issues = await this.getAllIssues();
+        const metrics = calculate.progressTrackerMetrics(issues);
+        console.log(metrics);
     }
 }
 
