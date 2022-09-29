@@ -1,76 +1,113 @@
 
-// import {storage} from '@forge/api'
-// import Config from './config';
+import {storage} from '@forge/api'
+import Config from './config';
 
-// const config = new Config();
+const config = new Config();
 
-class Calculate{
-    
-    STORYPOINT_FIELD = 'customfield_10016';
-    // STORYPOINT_FIELD = config.STORYPOINT_FIELD;
+const _ = require("lodash")
 
-    //todo async convert && storypoint store - issue assigned && storage call &&  remark add  && final json {sprintProgress : metrics , user : insights}
-    progressTrackerMetrics(issues , trackUnassignedIssues = true){
+class Calculate {
+   
+
+    MOCK_STORAGE_USER_DATA = [
+        {
+            accountId: "6326e30c14c6b4b221099d1f",
+            totalSprints: 1,
+            totalIssuesAssigned: 32,
+            total_storypoints: 16,
+            lables: [
+                {
+                    label: "labelName",
+                    totalIssuesAssigned: 0
+                }
+            ]
+        },
+
+        {
+            accountId : "70121:1848c046-b89f-4f8f-a22f-846875694d2a",
+            totalSprints: 3,
+            totalIssuesAssigned: 30,
+            total_storypoints: 20,
+            lables: [
+                {
+                    label: "labelName",
+                    totalIssuesAssigned: 0
+                }
+            ]
+        }
+
+    ]
+
+    // STORYPOINT_FIELD = 'customfield_10016';
+    // DEFAULT_STORYPOINT_PER_SPRINT = 10;
+
+    // todo uncomment
+    STORYPOINT_FIELD = config.STORYPOINT_FIELD;
+    DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
+
+
+    //todo async convert && storypoint store - issue assigned && storage call
+    progressTrackerMetrics(issues, trackUnassignedIssues = true) {
         const totalIssues = issues.length;
-        
+
         let unassignedIssues = [];
 
         let metrics = {
             total: totalIssues,
-            unassigned : 0,
-            todo : 0,
-            progress : 0,
-            done : 0,
+            unassigned: 0,
+            todo: 0,
+            progress: 0,
+            done: 0,
             sprintStorypoint: 0
-        }
-        
+        };
+
         let insights = new Map();
 
         issues.forEach(issue => {
-            
-            const statusName = issue.fields.status.name;
-            metrics.sprintStorypoint += issue.fields[this.STORYPOINT_FIELD]
 
-            if(statusName == "To Do") metrics.todo++;
-            if(statusName == "Done") metrics.done++;
-            if(issue.fields.assignee == null){
+            const statusName = issue.fields.status.name;
+            metrics.sprintStorypoint += issue.fields[this.STORYPOINT_FIELD];
+
+            if (statusName == "To Do") metrics.todo++;
+            if (statusName == "Done") metrics.done++;
+            if (issue.fields.assignee == null) {
                 metrics.unassigned++;
-                unassignedIssues.push(this.convertIssueToLimitedData(issue))
+                unassignedIssues.push(this.convertIssueToLimitedData(issue));
             }
-            else{
+            else {
                 //insights
                 let assignee = issue.fields.assignee;
 
-                if(insights.has(assignee.accountId)){
+                if (insights.has(assignee.accountId)) {
                     let accountIdData = insights.get(assignee.accountId);
-                    
-                    accountIdData.progress.total++;
-                    if(statusName == "To Do") accountIdData.progress.todo++;
-                    if(statusName == "Done") accountIdData.progress.done++;
 
-                    accountIdData.storypoint.sprintTotal+=issue.fields[this.STORYPOINT_FIELD]
+                    accountIdData.progress.total++;
+                    if (statusName == "To Do") accountIdData.progress.todo++;
+                    if (statusName == "Done") accountIdData.progress.done++;
+
+                    accountIdData.storypoint.sprintTotal += issue.fields[this.STORYPOINT_FIELD];
 
                     //update data
-                    insights.set(assignee.accountId , accountIdData );
+                    insights.set(assignee.accountId, accountIdData);
                 }
-                else{
+                else {
                     //new hashmap
 
                     const defaultInsightsMetrics = {
-                        accountId : assignee.accountId,
-                        displayName : assignee.displayName,
-                        avatarUrl : assignee.avatarUrls['48x48'],
-                        storypoint:{
+                        accountId: assignee.accountId,
+                        displayName: assignee.displayName,
+                        avatarUrl: assignee.avatarUrls['48x48'],
+                        storypoint: {
                             sprintTotal: issue.fields[this.STORYPOINT_FIELD]
                         },
-                        progress : {
-                            total : 1,
-                            todo : statusName == "To Do" ? 1 : 0,
-                            done : statusName == "Done" ? 1 : 0
+                        progress: {
+                            total: 1,
+                            todo: statusName == " To Do" ? 1 : 0,
+                            done: statusName == "Done" ? 1 : 0
                         }
-                    }
+                    };
 
-                    insights.set(assignee.accountId , defaultInsightsMetrics);
+                    insights.set(assignee.accountId, defaultInsightsMetrics);
 
                 }
             }
@@ -78,59 +115,158 @@ class Calculate{
         });
 
         //todo : remark & storypoint progress & storage call
-        for(let accountIdData of insights.values()){
-            let accountIdProgress = accountIdData.progress
+        for (let accountIdData of insights.values()) {
+            let accountIdProgress = accountIdData.progress;
             accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
+
             
-            //check defaultstorypoint = true else call storage...
-                /*
-                    remark based on own cap.
-                    remark based on default fix val per user
-                    remakr based on all avg of user
-                */
             //update
+            accountIdData.storypoint = this.generateStorypointRemark(
+                this.MOCK_STORAGE_USER_DATA, accountIdData, metrics.sprintStorypoint
+            )
             accountIdData.progress = accountIdProgress;
             insights.set(accountIdData.accountId, accountIdData);
         }
-        
+
         metrics.progress = totalIssues - metrics.done - metrics.todo;
         metrics['assigned'] = totalIssues - metrics.unassigned;
 
-        
+
 
         let result = {
             sprintProgress: metrics,
-            usersInsights : Object.fromEntries(insights)
-        }
-        if(trackUnassignedIssues){
+            usersInsights: Array.from(insights.values())
+        };
+        if (trackUnassignedIssues) {
             result['unAssignedIssues'] = unassignedIssues;
         }
 
+        // console.log(insights);
+        // return 0;
         return result;
     }
 
 
-    convertIssueToLimitedData(issue){
+    convertIssueToLimitedData(issue) {
 
         const newIssueData = {
             id: issue.id,
-            key : issue.key,
-            summary : issue.fields.summary,
-            issuetype : issue.fields.issuetype,
-            project : issue.fields.project,
-            priority : issue.fields.priority,
-            labels : issue.fields.labels,
-            status : issue.fields.status,
-            storypoint : issue.fields[this.STORYPOINT_FIELD],
-            reporter : issue.fields.reporter
-        }
+            key: issue.key,
+            summary: issue.fields.summary,
+            issuetype: issue.fields.issuetype,
+            project: issue.fields.project,
+            priority: issue.fields.priority,
+            labels: issue.fields.labels,
+            status: issue.fields.status,
+            storypoint: issue.fields[this.STORYPOINT_FIELD],
+            reporter: issue.fields.reporter
+        };
 
         return newIssueData;
+    }
+
+    generateRemarkMessage(displayName, spDiff, overAssigned = false){
+        if(overAssigned)   
+        return `${displayName} is over assigned by ${spDiff} points.`
+        
+        return `${displayName} is Under assigned by ${spDiff} points.`
+    }
+
+    generateStorypointRemark(previousSPDataAllUsers, userInsights , sprintTotalSP){
+        const currentSprintTotalSP = userInsights.storypoint.sprintTotal;
+
+        const userPreviousData = previousSPDataAllUsers.filter(user=> user.accountId == userInsights.accountId)[0]
+
+
+        //based on personalization > compare w/t current users avg.
+        let spAvg = Math.round(userPreviousData.total_storypoints/userPreviousData.totalSprints);
+
+        let personalized = {
+            remark: null,
+            message : null
+        }; 
+
+        if(userPreviousData.totalSprints>=2){
+            if(currentSprintTotalSP > spAvg){
+                personalized.remark = "Over Assigned";
+                personalized.message = this.generateRemarkMessage(userInsights.displayName,
+                    currentSprintTotalSP - spAvg
+                    ,true)
+                }
+                else{
+                    if(currentSprintTotalSP != spAvg ){
+                        //under assign
+                        personalized.remark = "Under Assigned";
+                        personalized.message = this.generateRemarkMessage(userInsights.displayName,
+                            spAvg - currentSprintTotalSP,
+                            false)
+                        }
+                    }
+                }
+                
+                //based on limit > compare w/t current users sprint total .
+                let sprintLimit = {
+                    remark: null,
+                    message : null
+                };
+                
+                if(currentSprintTotalSP > this.DEFAULT_STORYPOINT_PER_SPRINT){
+                    sprintLimit.remark = "Over Assigned";
+                    sprintLimit.message = this.generateRemarkMessage(userInsights.displayName,
+                        currentSprintTotalSP - this.DEFAULT_STORYPOINT_PER_SPRINT
+                        ,true)
+                    }
+                    else{
+                        if(currentSprintTotalSP != this.DEFAULT_STORYPOINT_PER_SPRINT){
+                            //under assign
+                            sprintLimit.remark = "Under Assigned";
+                            sprintLimit.message = this.generateRemarkMessage(userInsights.displayName,
+                                this.DEFAULT_STORYPOINT_PER_SPRINT - currentSprintTotalSP,
+                                false)
+                            }
+                        }
+                        
+        //based on allUsers > compare w/t all sprintTotalSP/no_of_user avg with sprint total . of user.
+
+        let allUser = {
+            remark: null,
+            message : null
+        };
+        const sprintTotalAvg = Math.round(sprintTotalSP/previousSPDataAllUsers.length);
+        
+        if(currentSprintTotalSP > sprintTotalAvg){
+                allUser.remark = "Over Assigned";
+                allUser.message = this.generateRemarkMessage(userInsights.displayName,
+                    currentSprintTotalSP - sprintTotalAvg
+                    ,true)
+            }
+            else{
+                if(currentSprintTotalSP != sprintTotalAvg){
+                    //under assign
+                    allUser.remark = "Under Assigned";
+                    allUser.message = this.generateRemarkMessage(userInsights.displayName,
+                        sprintTotalAvg - currentSprintTotalSP,
+                        false)
+            }
+
+
+
+        }
+
+        let storypointData = {
+            sprintTotal : currentSprintTotalSP,
+            remarkCompareWith:{
+                userPreviousData : personalized,
+                allUser : allUser,
+                sprintLimit : sprintLimit
+            }
+        }
+        return storypointData;
     }
 }
 
 
- // Test>> 
+// Test>> 
 
 // const obj = new Calculate();
 // console.log(obj.progressTrackerMetrics(obj.test));

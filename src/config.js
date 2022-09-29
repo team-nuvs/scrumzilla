@@ -2,11 +2,11 @@ import {storage} from '@forge/api'
 import api, { route } from "@forge/api";
 var _ = require('lodash');
 class Config{
-
+    //todo add users data in storage.. && default sp per sprint > storage.
     PROJECT_ID = 1;
     
     USE_DEFAULT_STORYPOINT = false;
-    DEFAULT_STORYPOINT_PER_SPRINT = 5;
+    DEFAULT_STORYPOINT_PER_SPRINT = 20;
     
     ACTIVE_SPRINT_ID = -1;
     
@@ -29,12 +29,14 @@ class Config{
         
         if(storedActiveSprintId!=ApiActiveSprintId){
             storage.set('activeSprintId',ApiActiveSprintId);
-            
+            //todo update user storage sprint count...
             console.log("config : new sprint id updated!");
         }
         
         this.ACTIVE_SPRINT_ID = ApiActiveSprintId;
     }
+
+    //todo compare storage user to users and update. if undefined storage then create new.
 
 }
 
