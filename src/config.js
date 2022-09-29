@@ -3,13 +3,16 @@ import api, { route } from "@forge/api";
 var _ = require('lodash');
 class Config{
 
-    BOARD_ID = 1;
     PROJECT_ID = 1;
     
     USE_DEFAULT_STORYPOINT = false;
     DEFAULT_STORYPOINT_PER_SPRINT = 5;
-
+    
     ACTIVE_SPRINT_ID = -1;
+    
+    //subject to change var.
+    BOARD_ID = 1;
+    STORYPOINT_FIELDNAME = 'customfield_10016';
 
     async checkAndUpdateActiveSprint(){
 
