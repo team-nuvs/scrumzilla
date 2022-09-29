@@ -1,4 +1,5 @@
 class Calculate{
+ 
     progressTrackerMetrics(issues){
         //user = false > progress tracker for all issues > it will calc. assigned & unassigned issues.
         const totalIssues = issues.length;
@@ -15,7 +16,7 @@ class Calculate{
 
         issues.forEach(issue => {
             
-            const statusName = issue.fields.status.statusCategory.name;
+            const statusName = issue.fields.status.name;
 
             if(statusName == "To Do") metrics.todo++;
             if(statusName == "Done") metrics.done++;
@@ -42,7 +43,7 @@ class Calculate{
                     const defaultInsightsMetrics = {
                         accountId : assignee.accountId,
                         displayName : assignee.displayName,
-                        avatarUrl : assignee.avatarUrls['32x32'],
+                        avatarUrl : assignee.avatarUrls['48x48'],
                         progress : {
                             total : 1,
                             todo : statusName == "To Do" ? 1 : 0,
@@ -56,6 +57,16 @@ class Calculate{
             }
 
         });
+
+        //todo : remark & storypoint progress & storage call
+        for(let accountIdData of insights.values()){
+            let accountIdProgress = accountIdData.progress
+            accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
+            
+            //update
+            accountIdData.progress = accountIdProgress;
+            insights.set(accountIdData.accountId, accountIdData);
+        }
         
         metrics.progress = totalIssues - metrics.done - metrics.todo;
         metrics['assigned'] = totalIssues - metrics.unassigned;
