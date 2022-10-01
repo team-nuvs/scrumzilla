@@ -1,53 +1,21 @@
 
-import {storage} from '@forge/api'
-import Config from './config';
+// import {storage} from '@forge/api'
+// import Config from './config';
 
-const config = new Config();
+// const config = new Config();
 
 const _ = require("lodash")
 
 class Calculate {
    
-
-    MOCK_STORAGE_USER_DATA = [
-        {
-            accountId: "6326e30c14c6b4b221099d1f",
-            totalSprints: 1,
-            totalIssuesAssigned: 32,
-            total_storypoints: 16,
-            lables: [
-                {
-                    label: "labelName",
-                    totalIssuesAssigned: 0
-                }
-            ]
-        },
-
-        {
-            accountId : "70121:1848c046-b89f-4f8f-a22f-846875694d2a",
-            totalSprints: 3,
-            totalIssuesAssigned: 30,
-            total_storypoints: 20,
-            lables: [
-                {
-                    label: "labelName",
-                    totalIssuesAssigned: 0
-                }
-            ]
-        }
-
-    ]
-
-    // STORYPOINT_FIELD = 'customfield_10016';
-    // DEFAULT_STORYPOINT_PER_SPRINT = 10;
-
+ 
     // todo uncomment
     STORYPOINT_FIELD = config.STORYPOINT_FIELD;
     DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
 
 
-    //todo async convert && storypoint store - issue assigned && storage call
-    progressTrackerMetrics(issues, trackUnassignedIssues = true) {
+    //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
+    progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
         let unassignedIssues = [];
@@ -114,6 +82,14 @@ class Calculate {
 
         });
 
+        let storedCurrentStoryPoint = -1;
+        if (!unassignedIssues && userInsightsMapOnly){
+            //todo api call
+            storedCurrentStoryPoint = 27;
+        }else{
+            //todo update value api...
+        }
+
         //todo : remark & storypoint progress & storage call
         for (let accountIdData of insights.values()) {
             let accountIdProgress = accountIdData.progress;
@@ -122,15 +98,19 @@ class Calculate {
             
             //update
             accountIdData.storypoint = this.generateStorypointRemark(
-                this.MOCK_STORAGE_USER_DATA, accountIdData, metrics.sprintStorypoint
+                this.MOCK_STORAGE_USER_DATA, accountIdData, 
+                (!unassignedIssues && userInsightsMapOnly)
+                    ? storedCurrentStoryPoint
+                    : metrics.sprintStorypoint
             )
             accountIdData.progress = accountIdProgress;
             insights.set(accountIdData.accountId, accountIdData);
         }
 
+        if(userInsightsMapOnly) return insights;
+
         metrics.progress = totalIssues - metrics.done - metrics.todo;
         metrics['assigned'] = totalIssues - metrics.unassigned;
-
 
 
         let result = {
@@ -263,6 +243,66 @@ class Calculate {
         }
         return storypointData;
     }
+
+
+    generateUserIssueRecommendations(allAssignedIssues, requestedIssueId){
+        let usersInsights = this.progressTrackerMetrics(allAssignedIssues,false, true);
+        //todo promise.all userInsights , storage, requestedIssue
+        // const requestedIssue = //response
+        const requestedIssue = this.MOCK_REQUESTED_ISSUE; //field!!
+        const previousSPDataAllUsers = this.MOCK_STORAGE_USER_DATA;
+
+        // const issueLabel = requestedIssue.labels[0];
+        const issueLabel = "frontend";
+        const userRank = this.generateUsersByLabelRank(issueLabel, previousSPDataAllUsers);
+
+        let recommendedUsers = [];
+
+        if(userRank!=0){
+            userRank.forEach(user => {
+                let userData = usersInsights.get(user.accountId);
+                if(user.labels[issueLabel])
+                    userData['labelScore'] = user.labels[issueLabel];
+                else
+                    userData['labelScore'] = 0;
+
+                recommendedUsers.push(userData);
+            });
+
+            const result ={
+                issue: this.convertIssueToLimitedData(requestedIssue),
+                recommendations : recommendedUsers
+            }
+            return result;
+        }
+
+        console.log("calc : userRank issue");
+        return 0;
+    }
+
+    generateUsersByLabelRank(issueLabel,previousSPDataAllUsers){
+        try{
+             //assuming only 1 label will be assigned to every ticket...
+            previousSPDataAllUsers.sort((a,b)=> {
+                if(!a.labels[issueLabel])
+                    return 1;
+                
+                if(!b.labels[issueLabel])
+                    return -1;
+                
+                    
+                if(b.labels[issueLabel] < a.labels[issueLabel])
+                    return -1;
+                return 1;
+            });
+
+            return previousSPDataAllUsers;
+        }
+        catch(e){
+            console.log("calc : label error!");
+            return 0;
+        }
+    }
 }
 
 
@@ -270,6 +310,6 @@ class Calculate {
 
 // const obj = new Calculate();
 // console.log(obj.progressTrackerMetrics(obj.test));
-
-// console.log(obj.convertIssueToLimitedData());
+// console.log(JSON.stringify(obj.generateUserIssueRecommendations(obj.test,0)));
+// obj.generateUserIssueRecommendations(obj.test,0)
 export default Calculate;
