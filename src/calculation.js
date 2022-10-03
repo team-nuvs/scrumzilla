@@ -8,14 +8,14 @@ const _ = require("lodash")
 
 class Calculate {
    
-  
+    
 
     // todo uncomment
-    STORYPOINT_FIELD = config.STORYPOINT_FIELD;
-    DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
+    // STORYPOINT_FIELD = config.STORYPOINT_FIELD;
+    // DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
 
 
-    // todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
+    //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
     progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
@@ -129,7 +129,7 @@ class Calculate {
 
 
     convertIssueToLimitedData(issue) {
-
+      //with field required
         const newIssueData = {
             id: issue.id,
             key: issue.key,
@@ -246,15 +246,15 @@ class Calculate {
     }
 
 
-    generateUserIssueRecommendations(allAssignedIssues, requestedIssueId){
+    async generateUserIssueRecommendations(allAssignedIssues, requestedIssueData){
         let usersInsights = this.progressTrackerMetrics(allAssignedIssues,false, true);
         //todo promise.all userInsights , storage, requestedIssue
         // const requestedIssue = //response
-        const requestedIssue = this.MOCK_REQUESTED_ISSUE; //field!!
+        const requestedIssue = requestedIssueData; //field!!
         const previousSPDataAllUsers = this.MOCK_STORAGE_USER_DATA;
 
-        // const issueLabel = requestedIssue.labels[0];
-        const issueLabel = "frontend";
+        const issueLabel = requestedIssue.fields.labels[0];
+        // const issueLabel = "frontend";
         const userRank = this.generateUsersByLabelRank(issueLabel, previousSPDataAllUsers);
 
         let recommendedUsers = [];

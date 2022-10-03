@@ -110,6 +110,20 @@ class API{
         return 0;
     }
 
+    async getIssue(issueIdOrKey){
+        const response = await api.asApp().requestJira(
+            route`/rest/api/3/issue/${issueIdOrKey}`
+        )
+        
+        if(response.statusText == 'OK'){
+            let data = await response.json();
+            let issue = data;
+            return issue;
+        }
+
+        console.log("api : failed - getIssue()");
+        return 0;
+    }
 
     // top level api's
     async getMetrics(){
@@ -121,7 +135,8 @@ class API{
 
     async getIssueAndRecommendatation(issueId){
         const allAssignedIssues = await this.getAllAssignedIssues();
-        const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, issueId);
+        const requestedIssueData = await this.getIssue(issueId);
+        const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, requestedIssueData);
         return result;
     }
 }
