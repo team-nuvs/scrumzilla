@@ -16,6 +16,7 @@ const calculate = new Calculate();
 class API{
     ACTIVE_SPRINT_ID = -1;
 
+    //low level api's
     async getActiveSprintId(){
         if(this.ACTIVE_SPRINT_ID == -1){
             this.ACTIVE_SPRINT_ID = await storage.get('activeSprintId');
@@ -43,10 +44,31 @@ class API{
         return 0;
     }
 
+    //todo : merge unassigned and assigned issue func.
     async getAllUnassignedIssues(){
         let sprintId = await this.getActiveSprintId();
         console.log(sprintId);
         let jql = `assignee = EMPTY AND Sprint = ${sprintId} order by created DESC`;
+
+        let response = await api.asApp().requestJira(
+            route`/rest/api/3/search?jql=${jql}`
+        )
+
+        
+        if(response.statusText == 'OK'){
+            let data = await response.json();
+            let issues = data.issues;
+            return issues;
+        }
+
+        console.log("api : failed - getAllUnassignedIssues()");
+        return 0;
+    }
+    
+    async getAllAssignedIssues(){
+        let sprintId = await this.getActiveSprintId();
+        console.log(sprintId);
+        let jql = `assignee != EMPTY AND Sprint = ${sprintId} order by created DESC`;
 
         let response = await api.asApp().requestJira(
             route`/rest/api/3/search?jql=${jql}`
@@ -88,10 +110,19 @@ class API{
         return 0;
     }
 
+
+    // top level api's
     async getMetrics(){
         const issues = await this.getAllIssues();
         const metrics = calculate.progressTrackerMetrics(issues);
-        console.log(metrics);
+        // console.log(metrics);
+        return metrics;
+    }
+
+    async getIssueAndRecommendatation(issueId){
+        const allAssignedIssues = await this.getAllAssignedIssues();
+        const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, issueId);
+        return result;
     }
 }
 

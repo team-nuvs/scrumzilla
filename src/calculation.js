@@ -8,13 +8,14 @@ const _ = require("lodash")
 
 class Calculate {
    
- 
+  
+
     // todo uncomment
     STORYPOINT_FIELD = config.STORYPOINT_FIELD;
     DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
 
 
-    //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
+    // todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
     progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
