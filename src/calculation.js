@@ -1,14 +1,40 @@
 
-// import {storage} from '@forge/api'
 // import Config from './config';
 
 // const config = new Config();
 
-const _ = require("lodash")
-
 class Calculate {
-   
-    
+
+    MOCK_STORAGE_USER_DATA = [
+        {
+            accountId: "6326e30c14c6b4b221099d1f",
+            totalSprints: 1,
+            totalIssuesAssigned: 32,
+            total_storypoints: 16,
+            labels: {
+                aws : 10,
+                backend : 1,
+                frontend : 2,
+            }
+        },
+
+        {
+            accountId : "70121:1848c046-b89f-4f8f-a22f-846875694d2a",
+            totalSprints: 3,
+            totalIssuesAssigned: 30,
+            total_storypoints: 20,
+            labels: {
+                aws : 4,
+                backend : 4,
+                database : 14
+            }
+        }
+
+
+    ]
+
+    STORYPOINT_FIELD = 'customfield_10016';
+    DEFAULT_STORYPOINT_PER_SPRINT = 10;
 
     // todo uncomment
     // STORYPOINT_FIELD = config.STORYPOINT_FIELD;

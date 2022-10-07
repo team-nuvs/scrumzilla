@@ -14,17 +14,15 @@ const config = new Config();
 const customApi = new API();
 
 resolver.define('getText',  async (req) => {
-    
-    // await config.checkAndUpdateActiveSprint();
-    // console.log( await customApi.getAllIssues())
-    // console.log( await customApi.getAllUnassignedIssues())
-    // await customApi.setAssignee('KB-19','70121:1848c046-b89f-4f8f-a22f-846875694d2a')
-    // await customApi.getMetrics();
+ 
     return "🔴 Live data"; 
 });
 
-
+//home
 resolver.define("getProgressMetrics" , async (req)=>{
+    await config.checkAndUpdateActiveSprintData();
+    await config.checkAndUpdateActiveSprintUsers();
+
     console.log("GET - progress metrics");
     const data = await customApi.getMetrics();
     return data;
@@ -40,20 +38,26 @@ resolver.define("getIssueData" , async (req)=>{
 
 resolver.define("setAssignee" , async (req)=>{
     console.log("SET - assignee ");
-    console.log(req.payload);
     return {issueId : "issueId"};
 })
 
 resolver.define("getUserData" , async (req)=>{
+    const userData = await storage.get('userData');
     console.log("GET - stored user's data ");
-    return {"userData" : "this is user"};
+    return userData;
 })
 
 resolver.define("getStorypoint" , async (req)=>{
     console.log("GET - stored storypoint ");
-    return 3;
+    let sp = await storage.get('sprintStorypoint');
+    return sp ? sp : -1; 
 })
 
+resolver.define('setDefaultStorypoint', async (req)=>{
+    const {value} = req.payload;
+    config.updateDefaultStorypoint(value);
+    return {message : "default storypoint updated!"};
+})
 export const handler = resolver.getDefinitions();
 
  

@@ -1,16 +1,10 @@
 import {storage} from '@forge/api';
 import api, { route } from "@forge/api";
 
-
-
-//
-import Config from './config';
 import Calculate from './calculation';
 
 
 //
-const _ = require('lodash')
-const config = new Config();
 const calculate = new Calculate();
 
 class API{
@@ -40,7 +34,7 @@ class API{
             return issues;
         }
         
-        console.log("api : failed - getAllIssues()!");
+        console.log("~ api : failed - getAllIssues()!");
         return 0;
     }
 
@@ -61,7 +55,7 @@ class API{
             return issues;
         }
 
-        console.log("api : failed - getAllUnassignedIssues()");
+        console.log("~ api : failed - getAllUnassignedIssues()");
         return 0;
     }
     
@@ -81,7 +75,7 @@ class API{
             return issues;
         }
 
-        console.log("api : failed - getAllUnassignedIssues()");
+        console.log("~ api : failed - getAllUnassignedIssues()");
         return 0;
     }
 
@@ -103,10 +97,10 @@ class API{
           });
 
          
-        console.log("api : issue assigned triggered! could be failed or successful");
+        console.log("~ api : issue assigned triggered! could be failed or successful");
         return 1;
 
-        console.log("api : failed - setAssignee()");
+        console.log("~ api : failed - setAssignee()");
         return 0;
     }
 
@@ -121,10 +115,21 @@ class API{
             return issue;
         }
 
-        console.log("api : failed - getIssue()");
+        console.log("~ api : failed - getIssue()");
         return 0;
     }
 
+    async getSprintUsers(){
+        let response = await api.asApp().requestJira(
+            route`/rest/api/3/users/search`
+        )
+        if(response.statusText="OK"){
+            response = await response.json();
+            return response.filter(user=>user["accountType"] == "atlassian")
+        }
+        console.log("~ api : failed - getSprintUser()");
+        return 0;
+    }
     // top level api's
     async getMetrics(){
         const issues = await this.getAllIssues();
