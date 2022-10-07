@@ -288,6 +288,7 @@ class Calculate {
         if(userRank!=0){
             userRank.forEach(user => {
                 let userData = usersInsights.get(user.accountId);
+                //todo labelscore percent 
                 if(user.labels[issueLabel])
                     userData['labelScore'] = user.labels[issueLabel];
                 else
