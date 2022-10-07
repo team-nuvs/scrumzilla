@@ -49,21 +49,19 @@ class Config {
         let users = await customApi.getSprintUsers();
         let storageUser = await storage.get('userData');
 
-        let mockUserData = {
-            accountId: null,
-            displayName:null,
-            totalSprints: 1,
-            totalIssuesAssigned: 0,
-            total_storypoints: 0,
-            labels: {}
-        };
-
+        
         if (storageUser == undefined) {
             let newStorageUser = [];
-
+            
             users.forEach(user => {
-                mockUserData.accountId = user.accountId;
-                mockUserData.displayName = user.displayName;
+                let mockUserData = {
+                    accountId: user.accountId,
+                    displayName: user.displayName,
+                    totalSprints: 1,
+                    totalIssuesAssigned: 0,
+                    total_storypoints: 0,
+                    labels: {}
+                };
                 newStorageUser.push(mockUserData);
             });
 
@@ -86,8 +84,14 @@ class Config {
             let updatedStorageUser = [...storageUser];
             users.forEach(user => {
                 if(!storageUserMap.has(user.accountId)){
-                    mockUserData.accountId = user.accountId;
-                    mockUserData.displayName = user.displayName;
+                    let mockUserData = {
+                        accountId: user.accountId,
+                        displayName: user.displayName,
+                        totalSprints: 1,
+                        totalIssuesAssigned: 0,
+                        total_storypoints: 0,
+                        labels: {}
+                    };
                     updatedStorageUser.push(mockUserData);
                     console.log(`config - update : user ${mockUserData.displayName} added.`);
                 }
@@ -98,6 +102,8 @@ class Config {
             console.log('config - storage userData updated.');
             return 1;
         }
+
+        console.log("config - unchanged userData. (wrt to count!)");
         return 0;
     }
 
