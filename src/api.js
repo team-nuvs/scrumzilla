@@ -9,6 +9,7 @@ const calculate = new Calculate();
 
 class API{
     ACTIVE_SPRINT_ID = -1;
+    STORYPOINT_FIELDNAME = 'customfield_10016';
 
     //low level api's
     async getActiveSprintId(){
@@ -61,7 +62,6 @@ class API{
     
     async getAllAssignedIssues(){
         let sprintId = await this.getActiveSprintId();
-        console.log(sprintId);
         let jql = `assignee != EMPTY AND Sprint = ${sprintId} order by created DESC`;
 
         let response = await api.asApp().requestJira(
@@ -95,13 +95,33 @@ class API{
               },
               body: JSON.stringify(bodydata)
           });
-
          
         console.log("~ api : issue assigned triggered! could be failed or successful");
-        return 1;
-
-        console.log("~ api : failed - setAssignee()");
+        
+        const issueData = await this.getIssue(issueIdOrKey);
+        const label = issueData.fields.labels[0];
+        const storypoint = parseInt(issueData.fields[this.STORYPOINT_FIELDNAME]);
+        await this.updateUserData(accountId, label, storypoint)
+        
+        console.log(`api : userData label for user ${issueData.fields.assignee.displayName} updated.`);
         return 0;
+    }
+
+    async updateUserData(accountId, label, issueStorypoint){
+        let userData = await storage.get('userData');
+        
+        let userIndex = userData.findIndex(user => user.accountId == accountId);
+
+        if(userData[userIndex].labels[label] != undefined){
+            userData[userIndex].labels[label]++;
+        }
+        else
+            userData[userIndex].labels[label] = 1;
+        
+        userData[userIndex].totalIssuesAssigned++;
+        userData[userIndex].total_storypoints+=issueStorypoint;
+        await storage.set('userData',userData);
+        return 1;
     }
 
     async getIssue(issueIdOrKey){
