@@ -7,24 +7,18 @@ var _ = require('lodash');
 var customApi = new API();
 
 class Config {
-    //todo add users data in storage.. && default sp per sprint > storage.
-    PROJECT_ID = 1;
 
-    USE_DEFAULT_STORYPOINT = false;
-    DEFAULT_STORYPOINT_PER_SPRINT = 10;
-
-    ACTIVE_SPRINT_ID = -1;
-
-    //todo check & save storypoint field name && labels raise error.
     //subject to change var.
     BOARD_ID = 1;
-    //top level
 
+    //top level
     async checkAndUpdate(){
         console.log(`config : checkAndUpdateFields()...`);
         await this.checkAndUpdateFields();
+
         console.log(`config : checkAndUpdateActiveSprintData()...`);
         await this.checkAndUpdateActiveSprintData();
+
         console.log(`config : checkAndUpdateActiveSprintUsers()...`);
         await this.checkAndUpdateActiveSprintUsers();
 
@@ -47,14 +41,17 @@ class Config {
         if (storedActiveSprintId != ApiActiveSprintId) {
             storage.set('activeSprintId', ApiActiveSprintId);
             //todo update user storage sprint count...
-            console.log("config : new sprint id updated!");
+
+            let storedUserData = await storage.get('userData');
+
+            storedUserData.forEach(user => {
+                user.totalSprints++;
+            });
+
+            await storage.set('userData', storedUserData);
+
+            console.log(`config : new sprint id ${ApiActiveSprintId} and storedUserData updated!`);
         }
-
-        this.ACTIVE_SPRINT_ID = ApiActiveSprintId;
-
-        let sprintStorypoint = await storage.get('sprintStorypoint');
-        console.log(`config : storypoint val.: ${undefined}`);
-
     }
 
     async checkAndUpdateActiveSprintUsers() {

@@ -20,8 +20,9 @@ resolver.define('getText',  async (req) => {
 
 //home
 resolver.define("getProgressMetrics" , async (req)=>{
+    await storage.set('defaultStorypoint',20);
     console.log("GET - progress metrics");
-    
+
     await config.checkAndUpdate();
     const data = await customApi.getMetrics();
     return data;
@@ -55,7 +56,16 @@ resolver.define("getUserData" , async (req)=>{
 resolver.define("getStorypoint" , async (req)=>{
     console.log("GET - stored storypoint ");
     let sp = await storage.get('sprintStorypoint');
-    return sp ? sp : -1; 
+    let defaultSP = await storage.get('defaultStorypoint')
+    let sprintID = await storage.get('activeSprintId')
+
+
+    const result = {
+        sp : sp,
+        defaultSP : defaultSP,
+        sprintID : sprintID
+    }
+    return JSON.stringify(result); 
 })
 
 resolver.define('setDefaultStorypoint', async (req)=>{

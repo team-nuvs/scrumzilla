@@ -3,12 +3,6 @@ import {storage} from '@forge/api';
 
 class Calculate {
 
-    DEFAULT_STORYPOINT_PER_SPRINT = 10;
-
-    // todo uncomment
-    // DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
-
-
     //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
     async progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
@@ -80,10 +74,9 @@ class Calculate {
 
         let storedCurrentStoryPoint = -1;
         if (!unassignedIssues && userInsightsMapOnly){
-            //todo api call
-            storedCurrentStoryPoint = 27;
+            storedCurrentStoryPoint = await storage.get("sprintStorypoint")
         }else{
-            //todo update value api...
+            storedCurrentStoryPoint = await storage.set("sprintStorypoint",metrics.sprintStorypoint)
         }
 
         //todo : remark & storypoint progress & storage call
@@ -93,7 +86,7 @@ class Calculate {
 
             const MOCK_STORAGE_USER_DATA = await storage.get('userData')
             //update
-            accountIdData.storypoint = this.generateStorypointRemark(
+            accountIdData.storypoint = await this.generateStorypointRemark(
                 MOCK_STORAGE_USER_DATA, accountIdData, 
                 (!unassignedIssues && userInsightsMapOnly)
                     ? storedCurrentStoryPoint
@@ -146,7 +139,7 @@ class Calculate {
         return `${displayName} is Under assigned by ${spDiff} points.`
     }
 
-    generateStorypointRemark(previousSPDataAllUsers, userInsights , sprintTotalSP){
+    async generateStorypointRemark(previousSPDataAllUsers, userInsights , sprintTotalSP){
         const currentSprintTotalSP = userInsights.storypoint.sprintTotal;
 
         const userPreviousData = previousSPDataAllUsers.filter(user=> user.accountId == userInsights.accountId)[0]
@@ -184,18 +177,20 @@ class Calculate {
                     message : null
                 };
                 
-                if(currentSprintTotalSP > this.DEFAULT_STORYPOINT_PER_SPRINT){
+                const DEFAULT_STORYPOINT_PER_SPRINT = await storage.get('defaultStorypoint');
+
+                if(currentSprintTotalSP > DEFAULT_STORYPOINT_PER_SPRINT){
                     sprintLimit.remark = "Over Assigned";
                     sprintLimit.message = this.generateRemarkMessage(userInsights.displayName,
-                        currentSprintTotalSP - this.DEFAULT_STORYPOINT_PER_SPRINT
+                        currentSprintTotalSP - DEFAULT_STORYPOINT_PER_SPRINT
                         ,true)
                     }
                     else{
-                        if(currentSprintTotalSP != this.DEFAULT_STORYPOINT_PER_SPRINT){
+                        if(currentSprintTotalSP != DEFAULT_STORYPOINT_PER_SPRINT){
                             //under assign
                             sprintLimit.remark = "Under Assigned";
                             sprintLimit.message = this.generateRemarkMessage(userInsights.displayName,
-                                this.DEFAULT_STORYPOINT_PER_SPRINT - currentSprintTotalSP,
+                                DEFAULT_STORYPOINT_PER_SPRINT - currentSprintTotalSP,
                                 false)
                             }
                         }

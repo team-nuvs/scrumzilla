@@ -38,11 +38,14 @@ class API{
         return 0;
     }
 
-    //todo : merge unassigned and assigned issue func.
-    async getAllUnassignedIssues(){
+    async getAllUnassignedOrAssignedIssues(unassigned = false){
         let sprintId = await this.getActiveSprintId();
-        console.log(sprintId);
-        let jql = `assignee = EMPTY AND Sprint = ${sprintId} order by created DESC`;
+        
+        let jql;
+        if(unassigned)
+            jql = `assignee = EMPTY AND Sprint = ${sprintId} order by created DESC`;
+        else
+            jql = `assignee != EMPTY AND Sprint = ${sprintId} order by created DESC`;
 
         let response = await api.asApp().requestJira(
             route`/rest/api/3/search?jql=${jql}`
@@ -55,28 +58,10 @@ class API{
             return issues;
         }
 
-        console.log("~ api : failed - getAllUnassignedIssues()");
+        console.log("~ api : failed - getAllUnassignedOrAssignedIssues()");
         return 0;
     }
-    
-    async getAllAssignedIssues(){
-        let sprintId = await this.getActiveSprintId();
-        let jql = `assignee != EMPTY AND Sprint = ${sprintId} order by created DESC`;
 
-        let response = await api.asApp().requestJira(
-            route`/rest/api/3/search?jql=${jql}`
-        )
-
-        
-        if(response.statusText == 'OK'){
-            let data = await response.json();
-            let issues = data.issues;
-            return issues;
-        }
-
-        console.log("~ api : failed - getAllUnassignedIssues()");
-        return 0;
-    }
 
 
     async setAssignee(issueIdOrKey, accountId){
@@ -174,7 +159,7 @@ class API{
     }
 
     async getIssueAndRecommendatation(issueId){
-        const allAssignedIssues = await this.getAllAssignedIssues();
+        const allAssignedIssues = await this.getAllUnassignedOrAssignedIssues(false);
         const requestedIssueData = await this.getIssue(issueId);
         const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, requestedIssueData);
         return result;
