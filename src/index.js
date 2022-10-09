@@ -37,12 +37,13 @@ resolver.define("getIssueData" , async (req)=>{
 })
 
 resolver.define("setAssignee" , async (req)=>{
+    console.log("SET - assignee ");
+    
     const {assigneeId} = req.payload;
     const {issueId} = req.payload;
     await customApi.setAssignee(issueId,assigneeId);
-    
+
     const response = await customApi.getMetrics();
-    console.log("SET - assignee ");
     return response;
 })
 

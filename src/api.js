@@ -150,6 +150,21 @@ class API{
         console.log("~ api : failed - getSprintUser()");
         return 0;
     }
+
+    async getFields(){
+        let response = await api.asApp().requestJira(
+            route`/rest/api/3/field`
+        )
+
+        if(response.statusText=="OK"){
+            response = await response.json();
+            return response;
+        }
+
+        console.log(`~ api : failed to fetch field`);
+        return 0;
+    }
+
     // top level api's
     async getMetrics(){
         const issues = await this.getAllIssues();

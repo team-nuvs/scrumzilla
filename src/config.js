@@ -15,6 +15,7 @@ class Config {
 
     ACTIVE_SPRINT_ID = -1;
 
+    //todo check & save storypoint field name && labels raise error.
     //subject to change var.
     BOARD_ID = 1;
     STORYPOINT_FIELDNAME = 'customfield_10016';
@@ -109,6 +110,33 @@ class Config {
 
     async updateDefaultStorypoint(value){
         await storage.set('defaultStorypoint',value);
+        return 1;
+    }
+
+    async checkAndUpdateFields(){
+        // assuming fields not getting changed in between the project cycle...
+        let storageStorypointField = await storage.get('STORYPOINT_FIELDNAME');
+        if(storageStorypointField){
+            console.log("config : required fields are present...");
+            return 1;
+        }
+        
+        let fields = await customApi.getFields();
+        
+        let storypointField = fields.filter(field => field.name == "Story point estimate");
+        
+        if(storypointField != undefined){
+            //check for label field
+            let label = fields.filter(field => field.name == "labels");
+            if(label){
+                await storage.set("STORYPOINT_FIELDNAME",storypointField.key);
+                console.log("config : required fields are present and configured in the storage data.");
+                return 1;
+            }
+            console.log("~ config : labels are not present in the field!");
+        }
+        
+        console.log("~ config : story point fields is not present in the field!");
         return 1;
     }
 }
