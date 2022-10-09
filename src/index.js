@@ -20,11 +20,9 @@ resolver.define('getText',  async (req) => {
 
 //home
 resolver.define("getProgressMetrics" , async (req)=>{
-    await config.checkAndUpdateFields();
-    await config.checkAndUpdateActiveSprintData();
-    await config.checkAndUpdateActiveSprintUsers();
-
     console.log("GET - progress metrics");
+    
+    await config.checkAndUpdate();
     const data = await customApi.getMetrics();
     return data;
 })

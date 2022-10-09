@@ -9,7 +9,6 @@ const calculate = new Calculate();
 
 class API{
     ACTIVE_SPRINT_ID = -1;
-    STORYPOINT_FIELDNAME = 'customfield_10016';
 
     //low level api's
     async getActiveSprintId(){
@@ -100,7 +99,8 @@ class API{
         
         const issueData = await this.getIssue(issueIdOrKey);
         const label = issueData.fields.labels[0];
-        const storypoint = parseInt(issueData.fields[this.STORYPOINT_FIELDNAME]);
+        const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
+        const storypoint = parseInt(issueData.fields[STORYPOINT_FIELDNAME]);
         await this.updateUserData(accountId, label, storypoint)
         
         console.log(`api : userData label for user ${issueData.fields.assignee.displayName} updated.`);

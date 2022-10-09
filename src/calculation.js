@@ -1,48 +1,16 @@
 
-// import Config from './config';
-
-// const config = new Config();
+import {storage} from '@forge/api';
 
 class Calculate {
 
-    MOCK_STORAGE_USER_DATA = [
-        {
-            accountId: "6326e30c14c6b4b221099d1f",
-            totalSprints: 1,
-            totalIssuesAssigned: 32,
-            total_storypoints: 16,
-            labels: {
-                aws : 10,
-                backend : 1,
-                frontend : 2,
-            }
-        },
-
-        {
-            accountId : "70121:1848c046-b89f-4f8f-a22f-846875694d2a",
-            totalSprints: 3,
-            totalIssuesAssigned: 30,
-            total_storypoints: 20,
-            labels: {
-                aws : 4,
-                backend : 4,
-                database : 14
-            }
-        }
-
-
-    ]
-
-    STORYPOINT_FIELD = 'customfield_10016';
     DEFAULT_STORYPOINT_PER_SPRINT = 10;
 
     // todo uncomment
-    // STORYPOINT_FIELD = config.STORYPOINT_FIELD;
     // DEFAULT_STORYPOINT_PER_SPRINT = config.DEFAULT_STORYPOINT_PER_SPRINT;
 
 
     //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
-    progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
+    async progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
         let unassignedIssues = [];
@@ -58,10 +26,11 @@ class Calculate {
 
         let insights = new Map();
 
+        const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
         issues.forEach(issue => {
 
             const statusName = issue.fields.status.name;
-            metrics.sprintStorypoint += issue.fields[this.STORYPOINT_FIELD];
+            metrics.sprintStorypoint += issue.fields[STORYPOINT_FIELDNAME];
 
             if (statusName == "To Do") metrics.todo++;
             if (statusName == "Done") metrics.done++;
@@ -80,7 +49,7 @@ class Calculate {
                     if (statusName == "To Do") accountIdData.progress.todo++;
                     if (statusName == "Done") accountIdData.progress.done++;
 
-                    accountIdData.storypoint.sprintTotal += issue.fields[this.STORYPOINT_FIELD];
+                    accountIdData.storypoint.sprintTotal += issue.fields[STORYPOINT_FIELDNAME];
 
                     //update data
                     insights.set(assignee.accountId, accountIdData);
@@ -93,7 +62,7 @@ class Calculate {
                         displayName: assignee.displayName,
                         avatarUrl: assignee.avatarUrls['48x48'],
                         storypoint: {
-                            sprintTotal: issue.fields[this.STORYPOINT_FIELD]
+                            sprintTotal: issue.fields[STORYPOINT_FIELDNAME]
                         },
                         progress: {
                             total: 1,
@@ -122,10 +91,10 @@ class Calculate {
             let accountIdProgress = accountIdData.progress;
             accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
 
-            
+            const MOCK_STORAGE_USER_DATA = await storage.get('userData')
             //update
             accountIdData.storypoint = this.generateStorypointRemark(
-                this.MOCK_STORAGE_USER_DATA, accountIdData, 
+                MOCK_STORAGE_USER_DATA, accountIdData, 
                 (!unassignedIssues && userInsightsMapOnly)
                     ? storedCurrentStoryPoint
                     : metrics.sprintStorypoint
@@ -154,8 +123,9 @@ class Calculate {
     }
 
 
-    convertIssueToLimitedData(issue) {
+    async convertIssueToLimitedData(issue) {
       //with field required
+        const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
         const newIssueData = {
             id: issue.id,
             key: issue.key,
@@ -165,7 +135,7 @@ class Calculate {
             priority: issue.fields.priority,
             labels: issue.fields.labels,
             status: issue.fields.status,
-            storypoint: issue.fields[this.STORYPOINT_FIELD],
+            storypoint: issue.fields[STORYPOINT_FIELDNAME],
             reporter: issue.fields.reporter
         };
 
@@ -277,7 +247,7 @@ class Calculate {
         //todo promise.all userInsights , storage, requestedIssue
         // const requestedIssue = //response
         const requestedIssue = requestedIssueData; //field!!
-        const previousSPDataAllUsers = this.MOCK_STORAGE_USER_DATA;
+        const previousSPDataAllUsers = await storage.get('userData');
 
         const issueLabel = requestedIssue.fields.labels[0];
         // const issueLabel = "frontend";
