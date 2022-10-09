@@ -84,10 +84,10 @@ class Calculate {
             let accountIdProgress = accountIdData.progress;
             accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
 
-            const MOCK_STORAGE_USER_DATA = await storage.get('userData')
+            const storedUserData = await storage.get('userData')
             //update
             accountIdData.storypoint = await this.generateStorypointRemark(
-                MOCK_STORAGE_USER_DATA, accountIdData, 
+                storedUserData, accountIdData, 
                 (!unassignedIssues && userInsightsMapOnly)
                     ? storedCurrentStoryPoint
                     : metrics.sprintStorypoint
@@ -146,7 +146,7 @@ class Calculate {
 
 
         //based on personalization > compare w/t current users avg.
-        let spAvg = Math.round(userPreviousData.total_storypoints/userPreviousData.totalSprints);
+        let spAvg = Math.round((userPreviousData.total_storypoints-userInsights.storypoint.sprintTotal)/userPreviousData.totalSprints);
 
         let personalized = {
             remark: null,

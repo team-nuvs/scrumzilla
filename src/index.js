@@ -20,7 +20,6 @@ resolver.define('getText',  async (req) => {
 
 //home
 resolver.define("getProgressMetrics" , async (req)=>{
-    await storage.set('defaultStorypoint',20);
     console.log("GET - progress metrics");
 
     await config.checkAndUpdate();
@@ -62,7 +61,7 @@ resolver.define("getStorypoint" , async (req)=>{
 
     const result = {
         sp : sp,
-        defaultSP : defaultSP,
+        sprintSPLimit : defaultSP,
         sprintID : sprintID
     }
     return JSON.stringify(result); 
