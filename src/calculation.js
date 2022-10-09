@@ -237,7 +237,7 @@ class Calculate {
         
         let usersInsights;
         let previousSPDataAllUsers;
-        
+
         const requestedIssue = requestedIssueData; //field!!
 
         await Promise.all([
@@ -249,7 +249,7 @@ class Calculate {
         });
 
         const issueLabel = requestedIssue.fields.labels[0];
-        // const issueLabel = "frontend";
+        
         const userRank = this.generateUsersByLabelRank(issueLabel, previousSPDataAllUsers);
 
         let recommendedUsers = [];
@@ -257,7 +257,7 @@ class Calculate {
         if(userRank!=0){
             userRank.forEach(user => {
                 let userData = usersInsights.get(user.accountId);
-                //todo labelscore percent 
+                //todo labelscore percent ??
                 if(user.labels[issueLabel])
                     userData['labelScore'] = user.labels[issueLabel];
                 else

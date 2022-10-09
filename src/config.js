@@ -40,8 +40,7 @@ class Config {
 
         if (storedActiveSprintId != ApiActiveSprintId) {
             storage.set('activeSprintId', ApiActiveSprintId);
-            //todo update user storage sprint count...
-
+            
             let storedUserData = await storage.get('userData');
 
             storedUserData.forEach(user => {

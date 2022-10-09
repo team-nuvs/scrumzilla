@@ -23,7 +23,7 @@ resolver.define("getProgressMetrics" , async (req)=>{
     console.log("GET - progress metrics");
 
     await config.checkAndUpdate();
-    
+
     const data = await customApi.getMetrics();
     return data;
 })
@@ -31,7 +31,6 @@ resolver.define("getProgressMetrics" , async (req)=>{
 resolver.define("getIssueData" , async (req)=>{
     console.log("GET - issue & recommendation data ");
     const {issueId} = req.payload;
-    //todo fix test issueid..
     const response = await customApi.getIssueAndRecommendatation(issueId);
     return response;
 })
