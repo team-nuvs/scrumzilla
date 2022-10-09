@@ -107,7 +107,7 @@ class Config {
         console.log("config - unchanged userData. (wrt to count!)");
         return 0;
     }
-
+    
     async updateDefaultStorypoint(value){
         await storage.set('defaultStorypoint',value);
         return 1;
@@ -117,23 +117,23 @@ class Config {
         // assuming fields not getting changed in between the project cycle...
         let storageStorypointField = await storage.get('STORYPOINT_FIELDNAME');
         if(storageStorypointField){
-            console.log("config : required fields are present...");
+            console.log("config : required fields are present. (wrt to storage!)");
             return 1;
         }
         
         let fields = await customApi.getFields();
         
         let storypointField = fields.filter(field => field.name == "Story point estimate");
-        
-        if(storypointField != undefined){
+        if(storypointField.length){
             //check for label field
-            let label = fields.filter(field => field.name == "labels");
-            if(label){
-                await storage.set("STORYPOINT_FIELDNAME",storypointField.key);
+            let label = fields.filter(field => field.name == "Labels");
+            if(label.length){
+                await storage.set("STORYPOINT_FIELDNAME",storypointField[0].key);
                 console.log("config : required fields are present and configured in the storage data.");
                 return 1;
             }
             console.log("~ config : labels are not present in the field!");
+            return 1;
         }
         
         console.log("~ config : story point fields is not present in the field!");
