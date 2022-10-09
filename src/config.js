@@ -13,20 +13,22 @@ class Config {
 
     //top level
     async checkAndUpdate(){
-        console.log(`config : checkAndUpdateFields()...`);
-        await this.checkAndUpdateFields();
-
-        console.log(`config : checkAndUpdateActiveSprintData()...`);
-        await this.checkAndUpdateActiveSprintData();
-
-        console.log(`config : checkAndUpdateActiveSprintUsers()...`);
-        await this.checkAndUpdateActiveSprintUsers();
+        //saved 5sec here...
+        Promise.all(
+            [
+                this.checkAndUpdateFields(),
+                this.checkAndUpdateActiveSprintData(),
+                this.checkAndUpdateActiveSprintUsers()
+            ]
+        ).then(res=>console.log("config : checkAndUpdate completed."))
 
         return 1;
     }
 
     // low level 
     async checkAndUpdateActiveSprintData() {
+        console.log(`config : checkAndUpdateActiveSprintData()...`);
+
         let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${this.BOARD_ID}/sprint`, {
             headers: {
                 'Accept': 'application/json'
@@ -55,6 +57,8 @@ class Config {
     }
 
     async checkAndUpdateActiveSprintUsers() {
+        console.log(`config : checkAndUpdateActiveSprintUsers()...`);
+
         let users = await customApi.getSprintUsers();
         let storageUser = await storage.get('userData');
 
@@ -122,6 +126,8 @@ class Config {
     }
 
     async checkAndUpdateFields(){
+        console.log(`config : checkAndUpdateFields()...`);
+
         // assuming fields not getting changed in between the project cycle...
         let storageStorypointField = await storage.get('STORYPOINT_FIELDNAME');
         if(storageStorypointField){
