@@ -36,7 +36,7 @@ class Calculate {
             if (statusName == "Done") metrics.done++;
             if (issue.fields.assignee == null) {
                 metrics.unassigned++;
-                unassignedIssues.push(this.convertIssueToLimitedData(issue));
+                unassignedIssues.push(this.convertIssueToLimitedData(issue,STORYPOINT_FIELDNAME));
             }
             else {
                 //insights
@@ -117,15 +117,12 @@ class Calculate {
             result['unAssignedIssues'] = unassignedIssues;
         }
 
-        // console.log(insights);
-        // return 0;
         return result;
     }
 
 
-    async convertIssueToLimitedData(issue) {
+    convertIssueToLimitedData(issue, STORYPOINT_FIELDNAME) {
       //with field required
-        const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
         const newIssueData = {
             id: issue.id,
             key: issue.key,
@@ -243,7 +240,7 @@ class Calculate {
 
 
     async generateUserIssueRecommendations(allAssignedIssues, requestedIssueData){
-        let usersInsights = this.progressTrackerMetrics(allAssignedIssues,false, true);
+        let usersInsights = await this.progressTrackerMetrics(allAssignedIssues,false, true);
         //todo promise.all userInsights , storage, requestedIssue
         // const requestedIssue = //response
         const requestedIssue = requestedIssueData; //field!!
@@ -267,8 +264,9 @@ class Calculate {
                 recommendedUsers.push(userData);
             });
 
+            let STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
             const result ={
-                issue: this.convertIssueToLimitedData(requestedIssue),
+                issue: this.convertIssueToLimitedData(requestedIssue, STORYPOINT_FIELDNAME),
                 recommendations : recommendedUsers
             }
             return result;
@@ -303,11 +301,4 @@ class Calculate {
     }
 }
 
-
-// Test>> 
-
-// const obj = new Calculate();
-// console.log(obj.progressTrackerMetrics(obj.test));
-// console.log(JSON.stringify(obj.generateUserIssueRecommendations(obj.test,0)));
-// obj.generateUserIssueRecommendations(obj.test,0)
 export default Calculate;

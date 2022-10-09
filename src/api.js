@@ -168,7 +168,7 @@ class API{
     // top level api's
     async getMetrics(){
         const issues = await this.getAllIssues();
-        const metrics = calculate.progressTrackerMetrics(issues);
+        const metrics = await calculate.progressTrackerMetrics(issues);
         // console.log(metrics);
         return metrics;
     }
