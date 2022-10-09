@@ -23,6 +23,7 @@ resolver.define("getProgressMetrics" , async (req)=>{
     console.log("GET - progress metrics");
 
     await config.checkAndUpdate();
+    
     const data = await customApi.getMetrics();
     return data;
 })

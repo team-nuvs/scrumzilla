@@ -3,7 +3,6 @@ import {storage} from '@forge/api';
 
 class Calculate {
 
-    //todo async convert && storypoint store - issue assigned && storage call && update storypoint_total_current_sprint
     async progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
@@ -78,13 +77,13 @@ class Calculate {
         }else{
             storedCurrentStoryPoint = await storage.set("sprintStorypoint",metrics.sprintStorypoint)
         }
+        
+        const storedUserData = await storage.get('userData')
 
-        //todo : remark & storypoint progress & storage call
         for (let accountIdData of insights.values()) {
             let accountIdProgress = accountIdData.progress;
             accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
 
-            const storedUserData = await storage.get('userData')
             //update
             accountIdData.storypoint = await this.generateStorypointRemark(
                 storedUserData, accountIdData, 
@@ -235,11 +234,19 @@ class Calculate {
 
 
     async generateUserIssueRecommendations(allAssignedIssues, requestedIssueData){
-        let usersInsights = await this.progressTrackerMetrics(allAssignedIssues,false, true);
-        //todo promise.all userInsights , storage, requestedIssue
-        // const requestedIssue = //response
+        
+        let usersInsights;
+        let previousSPDataAllUsers;
+        
         const requestedIssue = requestedIssueData; //field!!
-        const previousSPDataAllUsers = await storage.get('userData');
+
+        await Promise.all([
+            this.progressTrackerMetrics(allAssignedIssues,false, true),
+            storage.get('userData'),
+        ]).then(res => {
+           usersInsights = res[0],
+           previousSPDataAllUsers = res[1]; 
+        });
 
         const issueLabel = requestedIssue.fields.labels[0];
         // const issueLabel = "frontend";

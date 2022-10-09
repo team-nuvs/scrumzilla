@@ -13,15 +13,13 @@ class Config {
 
     //top level
     async checkAndUpdate(){
-        //saved 5sec here...
-        Promise.all(
+        await Promise.all(
             [
                 this.checkAndUpdateFields(),
                 this.checkAndUpdateActiveSprintData(),
                 this.checkAndUpdateActiveSprintUsers()
             ]
         ).then(res=>console.log("config : checkAndUpdate completed."))
-
         return 1;
     }
 
@@ -54,6 +52,7 @@ class Config {
 
             console.log(`config : new sprint id ${ApiActiveSprintId} and storedUserData updated!`);
         }
+        return 1;
     }
 
     async checkAndUpdateActiveSprintUsers() {
