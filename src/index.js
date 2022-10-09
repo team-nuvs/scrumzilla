@@ -21,7 +21,7 @@ resolver.define('getText',  async (req) => {
 //home
 resolver.define("getProgressMetrics" , async (req)=>{
     console.log("GET - progress metrics");
-
+    // await config.resetAllStoredData();
     await config.checkAndUpdate();
 
     const data = await customApi.getMetrics();

@@ -23,6 +23,17 @@ class Config {
         return 1;
     }
 
+    //reset
+    async resetAllStoredData(){
+        await Promise.all([
+            storage.delete('activeSprintId'),
+            storage.delete('STORYPOINT_FIELDNAME'),
+            storage.delete('defaultSprintpoint'),
+            storage.delete('userData'),
+            storage.delete('sprintStorypoint'),
+        ]).then(res=>console.log("config : reset all data."));
+        return 1;
+    }
     // low level 
     async checkAndUpdateActiveSprintData() {
         console.log(`config : checkAndUpdateActiveSprintData()...`);
@@ -40,16 +51,25 @@ class Config {
 
         if (storedActiveSprintId != ApiActiveSprintId) {
             storage.set('activeSprintId', ApiActiveSprintId);
-            
+
             let storedUserData = await storage.get('userData');
 
-            storedUserData.forEach(user => {
-                user.totalSprints++;
-            });
+            if(storedActiveSprintId != undefined){
 
-            await storage.set('userData', storedUserData);
-
+                storedUserData.forEach(user => {
+                    user.totalSprints++;
+                });
+                
+                await storage.set('userData', storedUserData);
+            }
+                
             console.log(`config : new sprint id ${ApiActiveSprintId} and storedUserData updated!`);
+        }
+
+        let defaultSP = await storage.get('defaultStorypoint');
+        if(!defaultSP){
+            await this.updateDefaultStorypoint(20);
+            console.log("config - sprint storypoint limit set to 20 (default).");
         }
         return 1;
     }
@@ -77,7 +97,6 @@ class Config {
             });
 
             await storage.set('userData',newStorageUser);
-            console.log(newStorageUser);
             console.log(`config : new - userData added / usercount - ${newStorageUser.length}` );
             return 1;
 
