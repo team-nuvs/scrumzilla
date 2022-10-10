@@ -229,7 +229,7 @@ class Calculate {
             message : null
         };
         const sprintTotalAvg = Math.round(sprintTotalSP/previousSPDataAllUsers.length);
-        
+        // console.log(`spTotal ${sprintTotalSP} length ${previousSPDataAllUsers.length} sprintTotalAvg ${sprintTotalAvg}`);
         if(currentSprintTotalSP > sprintTotalAvg){
                 allUser.remark = "Over Assigned";
                 allUser.message = this.generateRemarkMessage(userInsights.displayName,
