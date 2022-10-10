@@ -1,5 +1,6 @@
 
 import {storage} from '@forge/api';
+import API from './api';
 
 class Calculate {
 
@@ -59,7 +60,7 @@ class Calculate {
                         },
                         progress: {
                             total: 1,
-                            todo: statusName == " To Do" ? 1 : 0,
+                            todo: statusName == "To Do" ? 1 : 0,
                             done: statusName == "Done" ? 1 : 0
                         }
                     };
@@ -79,6 +80,33 @@ class Calculate {
         }
         
         const storedUserData = await storage.get('userData')
+
+        const customAPI = new API();
+        let allUsers = await customAPI.getSprintUsers();
+
+        if(insights.size != allUsers.length){
+            //fill insights...
+            allUsers.forEach(user => {
+                
+                if(!insights.has(user.accountId)){
+                    const defaultInsightsMetrics = {
+                        accountId: user.accountId,
+                        displayName: user.displayName,
+                        avatarUrl: user.avatarUrls['48x48'],
+                        storypoint: {
+                            sprintTotal: 0
+                        },
+                        progress: {
+                            total: 0,
+                            todo: 0,
+                            done: 0
+                        }
+                    };
+                    insights.set(user.accountId, defaultInsightsMetrics);
+                    console.log(`calc - default insights for user ${user.displayName} added.`);
+                }
+            });
+        }
 
         for (let accountIdData of insights.values()) {
             let accountIdProgress = accountIdData.progress;
