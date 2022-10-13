@@ -76,10 +76,55 @@ resolver.define('setDefaultStorypoint', async (req)=>{
 //standup
 resolver.define('setStandupDetails', async (req)=>{
     // console.log(req);
+    /**
+     *{
+        key : date,
+        issuesDetails:{   
+            id: set issues with key...
+        }
+
+        standupUpdates:[
+            {
+                accountId:
+                standupUpdates:[
+                    {
+                        issueId:
+                        update:{
+                            0:[]
+                            1:[]
+                            2:[]
+                        }
+                    }
+                ]
+                
+                standupUpdates:{
+                    0: [
+                        {
+                            issueId
+                            message:
+                        }
+                    ]
+                    
+                    1: [
+                        {
+                            issueId
+                            message:
+                        }
+                    ]
+
+                }
+            }
+        ]
+     }
+     */
     return {data : req};
 })
 
 resolver.define('getStandupDetails', async (req)=>{
+    /**
+     * 
+     * get insights & send
+     */
     return {message : "working..."};
 })
 
