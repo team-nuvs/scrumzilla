@@ -6,6 +6,7 @@ const JsonViewer = ({data}) => {
         <ReactJson src={data}
             theme = "monokai" 
             indentWidth={8}
+            collapsed={1}
         />
      );
 }

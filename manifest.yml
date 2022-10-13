@@ -1,10 +1,17 @@
 modules:
   jira:projectPage:
-    - key: scrumzilla-backend-hello-world-project-page
+    - key: product-page
       resource: main
       resolver:
         function: resolver
       title: scrumzilla-backend
+  jira:issueActivity:
+    - key: issue-activity
+      resource: main
+      resolver:
+        function: resolver
+      viewportSize: medium
+      title: "My Updates"
   function:
     - key: resolver
       handler: index.handler

@@ -72,6 +72,18 @@ resolver.define('setDefaultStorypoint', async (req)=>{
     config.updateDefaultStorypoint(value);
     return {message : "default storypoint updated!"};
 })
+
+//standup
+resolver.define('setStandupDetails', async (req)=>{
+    // console.log(req);
+    return {data : req};
+})
+
+resolver.define('getStandupDetails', async (req)=>{
+    return {message : "working..."};
+})
+
+
 export const handler = resolver.getDefinitions();
 
  
