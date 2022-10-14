@@ -2,6 +2,7 @@ import {storage} from '@forge/api';
 import api, { route } from "@forge/api";
 
 import Calculate from './calculation';
+import { result } from 'lodash';
 
 
 //
@@ -163,6 +164,28 @@ class API{
         const requestedIssueData = await this.getIssue(issueId);
         const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, requestedIssueData);
         return result;
+    }
+
+    async getStandupDetails(){
+        const allIssues = await this.getAllUnassignedOrAssignedIssues(false);
+        
+        let insights = await calculate.progressTrackerMetrics(allIssues,false,true);
+        let standupDetails = await storage.get('standupDetails');
+
+        const result = {
+            issues: allIssues,
+            insights : Array.from(insights.values()),
+            standupDetails : standupDetails ? standupDetails : null
+        }
+
+        return result;
+    }
+
+    async setStandupDetails(issueId,accountId, updateType, Message){
+        let standupDetails = await storage.get("standupDetails");
+        const standupId = calculate.generateTodaysDateCode();
+        
+        return {id : standupId};
     }
 }
 

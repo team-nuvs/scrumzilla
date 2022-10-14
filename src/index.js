@@ -75,6 +75,17 @@ resolver.define('setDefaultStorypoint', async (req)=>{
 
 //standup
 resolver.define('setStandupDetails', async (req)=>{
+    // const issueId = "id here.."
+    const issueId = req.context.extension.issue.id;
+    const {accountId} = req.context;
+
+    const {updateType} = req.payload;
+    const {message} = req.payload;
+
+    console.log(`SET - StandupDetails update ${updateType} for issue ${issueId} by ${accountId}` );
+    const result =await customApi.setStandupDetails(issueId,accountId, updateType, message);
+    return result;
+
     // console.log(req);
     /**
      *{
@@ -121,11 +132,9 @@ resolver.define('setStandupDetails', async (req)=>{
 })
 
 resolver.define('getStandupDetails', async (req)=>{
-    /**
-     * 
-     * get insights & send
-     */
-    return {message : "working..."};
+    console.log("GET - StandupDetails");
+    const result = customApi.getStandupDetails();
+    return result;
 })
 
 

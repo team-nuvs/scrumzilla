@@ -31,6 +31,7 @@ class Config {
             storage.delete('defaultSprintpoint'),
             storage.delete('userData'),
             storage.delete('sprintStorypoint'),
+            storage.delete('standupDetails')
         ]).then(res=>console.log("config : reset all data."));
         return 1;
     }

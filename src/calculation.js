@@ -1,5 +1,6 @@
 
 import {storage} from '@forge/api';
+import { toNumber } from 'lodash';
 import API from './api';
 
 class Calculate {
@@ -113,16 +114,19 @@ class Calculate {
             accountIdProgress['progress'] = accountIdProgress.total - accountIdProgress.todo - accountIdProgress.done;
 
             //update
-            accountIdData.storypoint = await this.generateStorypointRemark(
-                storedUserData, accountIdData, 
-                (!unassignedIssues && userInsightsMapOnly)
+                accountIdData.storypoint = await this.generateStorypointRemark(
+                    storedUserData, accountIdData, 
+                    (!unassignedIssues && userInsightsMapOnly)
                     ? storedCurrentStoryPoint
                     : metrics.sprintStorypoint
-            )
+                )
+                
+            
             accountIdData.progress = accountIdProgress;
             insights.set(accountIdData.accountId, accountIdData);
         }
 
+        
         if(userInsightsMapOnly) return insights;
 
         metrics.progress = totalIssues - metrics.done - metrics.todo;
@@ -147,6 +151,7 @@ class Calculate {
             id: issue.id,
             key: issue.key,
             summary: issue.fields.summary,
+            description : issue.fields.description? issue.fields.description : null,
             issuetype: issue.fields.issuetype,
             project: issue.fields.project,
             priority: issue.fields.priority,
@@ -329,6 +334,18 @@ class Calculate {
             console.log("calc : label error!");
             return 0;
         }
+    }
+
+    generateTodaysDateCode(){
+        let code = new Date();
+        code = code.toLocaleString("en-GB",{
+            day : 'numeric',
+            month : 'numeric',
+            year : 'numeric',
+        })
+
+        code = code.split("/").reverse().join("");
+        return toNumber(code);
     }
 }
 
