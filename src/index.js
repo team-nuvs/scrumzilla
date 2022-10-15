@@ -68,6 +68,8 @@ resolver.define("getStorypoint" , async (req)=>{
 })
 
 resolver.define('setDefaultStorypoint', async (req)=>{
+    console.log("SET - default Story Point");
+    
     const {value} = req.payload;
     config.updateDefaultStorypoint(value);
     return {message : "default storypoint updated!"};
@@ -75,65 +77,19 @@ resolver.define('setDefaultStorypoint', async (req)=>{
 
 //standup
 resolver.define('setStandupDetails', async (req)=>{
-    // const issueId = "id here.."
+    console.log(`SET - standup Details` );
+
     const issueId = req.context.extension.issue.id;
     const {accountId} = req.context;
 
-    const {updateType} = req.payload;
-    const {message} = req.payload;
-
-    console.log(`SET - StandupDetails update ${updateType} for issue ${issueId} by ${accountId}` );
-    const result =await customApi.setStandupDetails(issueId,accountId, updateType, message);
+    const result =await customApi.setStandupDetails(issueId,accountId, req.payload);
     return result;
-
-    // console.log(req);
-    /**
-     *{
-        key : date,
-        issuesDetails:{   
-            id: set issues with key...
-        }
-
-        standupUpdates:[
-            {
-                accountId:
-                standupUpdates:[
-                    {
-                        issueId:
-                        update:{
-                            0:[]
-                            1:[]
-                            2:[]
-                        }
-                    }
-                ]
-                
-                standupUpdates:{
-                    0: [
-                        {
-                            issueId
-                            message:
-                        }
-                    ]
-                    
-                    1: [
-                        {
-                            issueId
-                            message:
-                        }
-                    ]
-
-                }
-            }
-        ]
-     }
-     */
-    return {data : req};
 })
 
 resolver.define('getStandupDetails', async (req)=>{
-    console.log("GET - StandupDetails");
-    const result = customApi.getStandupDetails();
+    console.log("GET - Standup Details");
+
+    const result = await customApi.getStandupDetails();
     return result;
 })
 

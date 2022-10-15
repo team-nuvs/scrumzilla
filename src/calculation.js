@@ -347,6 +347,103 @@ class Calculate {
         code = code.split("/").reverse().join("");
         return toNumber(code);
     }
+
+    async setStandupDetails(issueId, accountId, updateType, message){
+        let standupDetails = await storage.get("standupDetails");
+        const standupId = this.generateTodaysDateCode();
+
+        let defaultDSStructure = {
+            standupId: null,
+            user: []
+        };
+
+        let defaultDSUserUpdate = {
+            accountId: null,
+            standupUpdate: {
+                0: [],  //What did I work on yesterday?
+                1: [], //What am I working on today?
+                2: [] //What issues are blocking me?
+            }
+        };
+
+        let defaultDSUpdateTypeEntry = {
+            issueId: null,
+            message : null
+        }
+
+        if (standupDetails) {
+
+            let activeDSIndex = standupDetails.findIndex(standup => standup.standupId == standupId);
+
+            if(activeDSIndex){
+                let activeDS = standupDetails[activeDSIndex];
+
+                let userDSIndex = activeDS.user.findIndex(user => user.accountId == accountId);
+
+
+                if(userDSIndex){
+                    //contain acc standupId > update ds
+                    let userDSData = activeDS[userDSIndex];
+
+                    defaultDSUpdateTypeEntry.issueId = issueId;
+                    defaultDSUpdateTypeEntry.message = message;
+
+                    userDSData.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
+                    
+                    //update
+                    activeDS[userDSIndex] = userDSData;
+                    console.log(`calc - setStandupDetails() for ${accountId} updated.`);
+                }
+                else{
+                    // active ds > new acc. id entry
+
+                    defaultDSUserUpdate.accountId = accountId;
+                    
+                    defaultDSUpdateTypeEntry.issueId = issueId;
+                    defaultDSUpdateTypeEntry.message = message;
+
+                    defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
+                    
+                    activeDS.user.push(defaultDSUserUpdate);
+                    console.log(`calc - setStandupDetails() for ${accountId} created.`);
+                }
+                
+                standupDetails[activeDSIndex] = activeDS;
+
+                await storage.set("standupDetails",standupDetails);
+
+                console.log(`calc - setStandupDetails() for ${standupId} updated.`);
+                return { message: 'success' };
+            }
+        }
+        
+
+        // create new standup daily update
+        defaultDSStructure.standupId = standupId;
+
+        defaultDSUserUpdate.accountId = accountId;
+        
+        defaultDSUpdateTypeEntry.issueId = issueId;
+        defaultDSUpdateTypeEntry.message = message;
+
+
+        defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
+        defaultDSStructure.user.push(defaultDSUserUpdate);
+
+        if(standupDetails){
+            // adding DS code first time.
+            standupDetails.unshift(defaultDSStructure)
+            await storage.set("standupDetails",standupDetails);
+            console.log(`calc - setStandupDetails() for ${standupId} created and updated for ${accountId}. (new standup)`);
+        }
+        else{
+            // first time storage DS added
+            await storage.set("standupDetails", [defaultDSStructure]);
+            console.log(`calc - setStandupDetails() for ${standupId} created and updated for ${accountId}. (config.)`);
+
+        }
+        return { message: 'success' };
+    }
 }
 
 export default Calculate;
