@@ -181,9 +181,9 @@ class API {
         return result;
     }
 
-    async setStandupDetails(issueId, accountId, payload) {
+    async setStandupDetails(issueId, key, accountId, payload) {
         const {updateType, message} = payload;
-        const result = await calculate.setStandupDetails(issueId, accountId, updateType, message);
+        const result = await calculate.setStandupDetails(issueId, key,  accountId, updateType, message);
 
         return result;
     }

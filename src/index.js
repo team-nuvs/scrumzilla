@@ -80,15 +80,15 @@ resolver.define('setStandupDetails', async (req)=>{
     console.log(`SET - standup Details` );
 
     const issueId = req.context.extension.issue.id;
+    const key = req.context.extension.issue.key;
     const {accountId} = req.context;
 
-    const result =await customApi.setStandupDetails(issueId,accountId, req.payload);
+    const result =await customApi.setStandupDetails(issueId, key, accountId, req.payload);
     return result;
 })
 
 resolver.define('getStandupDetails', async (req)=>{
     console.log("GET - Standup Details");
-
     const result = await customApi.getStandupDetails();
     return result;
 })

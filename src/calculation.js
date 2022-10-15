@@ -348,12 +348,13 @@ class Calculate {
         return toNumber(code);
     }
 
-    async setStandupDetails(issueId, accountId, updateType, message){
+    async setStandupDetails(issueId, key, accountId, updateType, message){
         let standupDetails = await storage.get("standupDetails");
         const standupId = this.generateTodaysDateCode();
 
         let defaultDSStructure = {
             standupId: null,
+            created : null,
             user: []
         };
 
@@ -368,30 +369,30 @@ class Calculate {
 
         let defaultDSUpdateTypeEntry = {
             issueId: null,
+            key : null,
             message : null
         }
 
-        if (standupDetails) {
+        if (standupDetails != undefined) {
 
             let activeDSIndex = standupDetails.findIndex(standup => standup.standupId == standupId);
-
-            if(activeDSIndex){
+            if(activeDSIndex >= 0){
                 let activeDS = standupDetails[activeDSIndex];
-
+                
                 let userDSIndex = activeDS.user.findIndex(user => user.accountId == accountId);
-
-
-                if(userDSIndex){
+                
+                if(userDSIndex >= 0 ){
                     //contain acc standupId > update ds
-                    let userDSData = activeDS[userDSIndex];
+                    let userDSData = activeDS.user[userDSIndex];
 
                     defaultDSUpdateTypeEntry.issueId = issueId;
+                    defaultDSUpdateTypeEntry.key = key;
                     defaultDSUpdateTypeEntry.message = message;
 
                     userDSData.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
                     
                     //update
-                    activeDS[userDSIndex] = userDSData;
+                    activeDS.user[userDSIndex] = userDSData;
                     console.log(`calc - setStandupDetails() for ${accountId} updated.`);
                 }
                 else{
@@ -400,9 +401,12 @@ class Calculate {
                     defaultDSUserUpdate.accountId = accountId;
                     
                     defaultDSUpdateTypeEntry.issueId = issueId;
+                    defaultDSUpdateTypeEntry.key = key;
                     defaultDSUpdateTypeEntry.message = message;
 
+                    console.log("ok");
                     defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
+                    console.log("working...");
                     
                     activeDS.user.push(defaultDSUserUpdate);
                     console.log(`calc - setStandupDetails() for ${accountId} created.`);
@@ -420,17 +424,19 @@ class Calculate {
 
         // create new standup daily update
         defaultDSStructure.standupId = standupId;
+        defaultDSStructure.created = new Date().toISOString();
 
         defaultDSUserUpdate.accountId = accountId;
         
         defaultDSUpdateTypeEntry.issueId = issueId;
+        defaultDSUpdateTypeEntry.key = key;
         defaultDSUpdateTypeEntry.message = message;
 
 
         defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
         defaultDSStructure.user.push(defaultDSUserUpdate);
 
-        if(standupDetails){
+        if(standupDetails != undefined){
             // adding DS code first time.
             standupDetails.unshift(defaultDSStructure)
             await storage.set("standupDetails",standupDetails);
