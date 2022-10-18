@@ -90,7 +90,7 @@ class API {
         await this.updateUserData(accountId, label, storypoint);
 
         console.log(`api : userData label for user ${issueData.fields.assignee.displayName} updated.`);
-        return 0;
+        return {userAssigned : true};
     }
 
     async updateUserData(accountId, label, issueStorypoint) {

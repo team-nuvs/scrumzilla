@@ -40,9 +40,8 @@ resolver.define("setAssignee" , async (req)=>{
     
     const {assigneeId} = req.payload;
     const {issueId} = req.payload;
-    await customApi.setAssignee(issueId,assigneeId);
-
-    const response = await customApi.getMetrics();
+    const response = await customApi.setAssignee(issueId,assigneeId);
+    // const response = await customApi.getMetrics();
     return response;
 })
 
