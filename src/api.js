@@ -172,6 +172,27 @@ class API {
         let insights = await calculate.progressTrackerMetrics(allIssues, false, true);
         let standupDetails = await storage.get('standupDetails');
 
+        //sorting on the basis of blockers ONLY ON THE LATEST (TODAY) STANDUP!!!
+        
+        if(standupDetails != undefined){
+
+            let currentStandup = standupDetails[0];
+            let currentStandupUser = currentStandup['user'];
+
+            currentStandupUser.sort((a,b) =>{
+                    let alength = a.standupUpdate[2].length;
+                    let blength = b.standupUpdate[2].length;
+
+                    if(alength < blength)
+                        return 1;
+                    return -1;
+            })
+
+            currentStandup['user'] = currentStandupUser;
+
+            standupDetails[0] = currentStandup;
+        }
+
         const result = {
             issues: allIssues,
             insights: Array.from(insights.values()),

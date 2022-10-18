@@ -417,7 +417,7 @@ class Calculate {
                 await storage.set("standupDetails",standupDetails);
 
                 console.log(`calc - setStandupDetails() for ${standupId} updated.`);
-                return { message: 'success' };
+                return { updated : true };
             }
         }
         
