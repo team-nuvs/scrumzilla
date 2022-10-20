@@ -99,19 +99,19 @@ resolver.define('getStandupDetails', async (req)=>{
 })
 
 
-//todo store null if not message in setStandupUpdate 
-// add deletestorage key, standupid, notes input field & btn;
-
 resolver.define("setStandupDetailsNotes", async (req)=>{
     const {standupId} = req.payload;
     const {notes} = req.payload;
 
+    console.log(`SET - standup Details Notes for ${standupId}`)
+    
     const response = await customApi.setStandupDetailsNotes(standupId, notes);
     return response;
 })
 
 //dev api
 resolver.define("deleteStorageData", async (req)=>{
+    console.log(`! Delete - storageDate for ${req.payload.key}`)
     const response = await customApi.deleteStorageData(req.payload.key);
     return response;
 })

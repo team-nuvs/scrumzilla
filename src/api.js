@@ -227,7 +227,7 @@ class API {
 
     async deleteStorageData(key){
         await storage.delete(key);
-        return {deleted : true};
+        return {deleted : true, message : "hope you know what you are doing."};
     }
 }
 

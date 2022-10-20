@@ -351,7 +351,7 @@ class Calculate {
     async setStandupDetails(issueId, key, accountId, updateType, message){
         let standupDetails = await storage.get("standupDetails");
         const standupId = this.generateTodaysDateCode();
-
+        
         let defaultDSStructure = {
             standupId: null,
             created : null,
@@ -388,7 +388,7 @@ class Calculate {
 
                     defaultDSUpdateTypeEntry.issueId = issueId;
                     defaultDSUpdateTypeEntry.key = key;
-                    defaultDSUpdateTypeEntry.message = message;
+                    defaultDSUpdateTypeEntry.message = message ? message : null;
 
                     userDSData.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
                     
@@ -403,7 +403,7 @@ class Calculate {
                     
                     defaultDSUpdateTypeEntry.issueId = issueId;
                     defaultDSUpdateTypeEntry.key = key;
-                    defaultDSUpdateTypeEntry.message = message;
+                    defaultDSUpdateTypeEntry.message = message ? message : null;
 
                     console.log("ok");
                     defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
@@ -431,7 +431,7 @@ class Calculate {
         
         defaultDSUpdateTypeEntry.issueId = issueId;
         defaultDSUpdateTypeEntry.key = key;
-        defaultDSUpdateTypeEntry.message = message;
+        defaultDSUpdateTypeEntry.message = message ? message : null;
 
 
         defaultDSUserUpdate.standupUpdate[updateType].push(defaultDSUpdateTypeEntry);
