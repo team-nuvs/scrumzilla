@@ -13,6 +13,7 @@ function App() {
 
   const [standupDetails, setStandupDetails] = useState(null);
 
+  const [commonResponse, setCommonResponse] = useState(null);
 
   useEffect(() => {
     invoke('getText', { example: 'my-invoke-variable' }).then(setData);
@@ -122,8 +123,50 @@ function App() {
           </div>
         </div>
 
+{/* standup notes and delete storage data */}
+          <div className="">
+
+            <input type="text" className="p-2 border-2 border-black my-2 w-full"
+              placeholder="standup Id here..."
+              id="standupId"
+            />
+            <textarea type="text" className="p-2 border-2 border-black my-2 w-full"
+              placeholder="notes here..."
+              id="standupNotes"
+            />
+            <button className=" my-2 mx-1 px-2 bg-black text-white hover:bg-gray-700"
+              onClick={() => {
+                const standupId = document.querySelector("#standupId").value;
+                  const notes = document.querySelector("#standupNotes").value;
+                  invoke('setStandupDetailsNotes', { standupId: standupId, notes : notes }).then(setCommonResponse);
+                  
+                }}
+            >submit</button>
+          </div>
+
+          <div>
+                <input type="text" className="p-2 border-2 border-black my-2 w-full"
+                  placeholder="storage key here..."
+                  id="storageDataKey"
+                />
+            <button className=" my-2 mx-1 px-2 bg-red-700 text-white hover:bg-red-900"
+              onClick={() => {
+                const key = document.querySelector("#storageDataKey").value;
+                  invoke('deleteStorageData', { key: key }).then(setCommonResponse);
+                }}
+            >Delete</button>
+
+          </div>
+
+          <div className="">
+          <h1>common response viewer (standup notes / storage key delete)</h1>
+          <JsonViewer data={commonResponse} />
+        </div>
+
+        </div>
+
       </div>
-    </div>
+    
   );
 }
 

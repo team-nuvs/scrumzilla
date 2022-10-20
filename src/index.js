@@ -98,8 +98,9 @@ resolver.define('getStandupDetails', async (req)=>{
     return result;
 })
 
-//todo standup done > store notes in the (standupID , notes > to update)  standup Details. > update?? . standup completed field in json
+
 //todo store null if not message in setStandupUpdate 
+// add deletestorage key, standupid, notes input field & btn;
 
 resolver.define("setStandupDetailsNotes", async (req)=>{
     const {standupId} = req.payload;
