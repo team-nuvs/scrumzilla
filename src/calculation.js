@@ -355,6 +355,7 @@ class Calculate {
         let defaultDSStructure = {
             standupId: null,
             created : null,
+            notes : null,
             user: []
         };
 

@@ -98,6 +98,22 @@ resolver.define('getStandupDetails', async (req)=>{
     return result;
 })
 
+//todo standup done > store notes in the (standupID , notes > to update)  standup Details. > update?? . standup completed field in json
+//todo store null if not message in setStandupUpdate 
+
+resolver.define("setStandupDetailsNotes", async (req)=>{
+    const {standupId} = req.payload;
+    const {notes} = req.payload;
+
+    const response = await customApi.setStandupDetailsNotes(standupId, notes);
+    return response;
+})
+
+//dev api
+resolver.define("deleteStorageData", async (req)=>{
+    const response = await customApi.deleteStorageData(req.payload.key);
+    return response;
+})
 
 export const handler = resolver.getDefinitions();
 

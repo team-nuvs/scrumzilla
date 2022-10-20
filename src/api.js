@@ -208,6 +208,27 @@ class API {
 
         return result;
     }
+
+    async setStandupDetailsNotes(standupId, notes){
+        let standupDetails = await storage.get("standupDetails");
+
+        let currentStandupDetailsIndex = standupDetails.findIndex(details => details.standupId == standupId);
+        let currentStandupDetails = standupDetails[currentStandupDetailsIndex];
+
+        currentStandupDetails.notes = notes;
+
+        standupDetails[currentStandupDetailsIndex] = currentStandupDetails;
+
+        await storage.set("standupDetails",standupDetails);
+
+        return {updated : true};
+
+    }
+
+    async deleteStorageData(key){
+        await storage.delete(key);
+        return {deleted : true};
+    }
 }
 
 export default API;
