@@ -22,6 +22,8 @@ resolver.define('getText',  async (req) => {
 resolver.define("getProgressMetrics" , async (req)=>{
     console.log("GET - progress metrics");
     // await config.resetAllStoredData();
+    const projectId = req.context.extension.project.id;
+    
     await config.checkAndUpdate();
 
     const data = await customApi.getMetrics();
@@ -116,6 +118,12 @@ resolver.define("deleteStorageData", async (req)=>{
     return response;
 })
 
+
+/**
+ * test case to fix
+ *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?
+ * enable sprint?? test
+ */
 export const handler = resolver.getDefinitions();
 
  

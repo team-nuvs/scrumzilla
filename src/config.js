@@ -38,7 +38,7 @@ class Config {
     // low level 
     async checkAndUpdateActiveSprintData() {
         console.log(`config : checkAndUpdateActiveSprintData()...`);
-
+        //todo dynamic board id / project id. make api call >filter project id (from payload.)
         let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${this.BOARD_ID}/sprint`, {
             headers: {
                 'Accept': 'application/json'
