@@ -7,12 +7,6 @@ const resolver = new Resolver();
 import Config from './config';
 import API from './api';
 
-
-//custom modules obj dec.
-const config = new Config();
-
-const customApi = new API();
-
 resolver.define('getText',  async (req) => {
  
     return "🔴 Live data"; 
@@ -23,9 +17,13 @@ resolver.define("getProgressMetrics" , async (req)=>{
     // await config.resetAllStoredData();
     const projectId = req.context.extension.project.id;
 
+    const config = new Config(projectId);
+    
+    
     console.log(`GET - progress metrics for ${projectId}`);
-    const checkStatus = await config.checkAndUpdate(projectId);
+    const checkStatus = await config.checkAndUpdate();
     if(checkStatus==1){
+        const customApi = new API(projectId);
         const data = await customApi.getMetrics();
         return data;   
     }
@@ -34,6 +32,11 @@ resolver.define("getProgressMetrics" , async (req)=>{
 
 resolver.define("getIssueData" , async (req)=>{
     console.log("GET - issue & recommendation data ");
+
+    const projectId = req.context.extension.project.id;
+
+    const customApi = new API(projectId)
+
     const {issueId} = req.payload;
     const response = await customApi.getIssueAndRecommendatation(issueId);
     return response;
@@ -41,7 +44,10 @@ resolver.define("getIssueData" , async (req)=>{
 
 resolver.define("setAssignee" , async (req)=>{
     console.log("SET - assignee ");
-    
+
+    const projectId = req.context.extension.project.id;
+    const customApi = new API(projectId);
+
     const {assigneeId} = req.payload;
     const {issueId} = req.payload;
     const response = await customApi.setAssignee(issueId,assigneeId);
@@ -50,13 +56,18 @@ resolver.define("setAssignee" , async (req)=>{
 })
 
 resolver.define("getUserData" , async (req)=>{
-    const userData = await storage.get('userData');
     console.log("GET - stored user's data ");
+
+    const projectId = req.context.extension.project.id;
+
+    const userData = await storage.get('userData');
     return userData;
 })
 
 resolver.define("getStorypoint" , async (req)=>{
-    console.log("GET - stored storypoint ");
+    console.log("GET - stored storypoint");
+
+    const projectId = req.context.extension.project.id;
     let sp = await storage.get('sprintStorypoint');
     let defaultSP = await storage.get('defaultStorypoint')
     let sprintID = await storage.get('activeSprintId')
@@ -71,7 +82,12 @@ resolver.define("getStorypoint" , async (req)=>{
 })
 
 resolver.define('setDefaultStorypoint', async (req)=>{
+
     console.log("SET - default Story Point");
+
+    const projectId = req.context.extension.project.id;
+
+    const config = new Config(projectId);
     
     const {value} = req.payload;
     config.updateDefaultStorypoint(value);
@@ -80,9 +96,13 @@ resolver.define('setDefaultStorypoint', async (req)=>{
 
 //standup
 resolver.define('setStandupDetails', async (req)=>{
+
     console.log(`SET - standup Details` );
-    
+
+    const projectId = req.context.extension.project.id;
+
     try{
+        const customApi = new API(projectId);
 
         const issueId = req.context.extension.issue.id;
         const key = req.context.extension.issue.key;
@@ -97,24 +117,40 @@ resolver.define('setStandupDetails', async (req)=>{
 })
 
 resolver.define('getStandupDetails', async (req)=>{
+
     console.log("GET - Standup Details");
+
+    const projectId = req.context.extension.project.id;
+
+    const customApi = new API(projectId);
+
     const result = await customApi.getStandupDetails();
     return result;
 })
 
 
 resolver.define("setStandupDetailsNotes", async (req)=>{
+
     const {standupId} = req.payload;
     const {notes} = req.payload;
 
     console.log(`SET - standup Details Notes for ${standupId}`)
+
+    const projectId = req.context.extension.project.id;
     
+    const customApi = new API(projectId);
+
     const response = await customApi.setStandupDetailsNotes(standupId, notes);
     return response;
 })
 
 //dev api
 resolver.define("deleteStorageData", async (req)=>{
+
+    const projectId = req.context.extension.project.id;
+
+    const customApi = new API(projectId);
+
     console.log(`! Delete - storageDate for ${req.payload.key}`)
     const response = await customApi.deleteStorageData(req.payload.key);
     return response;
@@ -123,6 +159,7 @@ resolver.define("deleteStorageData", async (req)=>{
 
 /**
  * test case to fix
+ * todo : project timer.
  * add raise message error > CHECK FOR EACH ISSUE IF NOT FOUND THEN RAISE ERROR
  *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?
  * enable sprint?? test

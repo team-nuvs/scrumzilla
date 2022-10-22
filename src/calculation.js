@@ -5,6 +5,14 @@ import API from './api';
 
 class Calculate {
 
+    PROJECT_ID = null;
+
+    
+    constructor(projectId){
+        this.PROJECT_ID = projectId; 
+        console.log(`project id calculate ${this.PROJECT_ID} ******************`);
+    }
+
     async progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
         const totalIssues = issues.length;
 
@@ -103,7 +111,7 @@ class Calculate {
         
         const storedUserData = await storage.get('userData')
 
-        const customAPI = new API();
+        const customAPI = new API(this.PROJECT_ID);
         let allUsers = await customAPI.getSprintUsers();
 
         if(insights.size != allUsers.length){

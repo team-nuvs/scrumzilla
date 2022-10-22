@@ -6,10 +6,23 @@ import { result } from 'lodash';
 
 
 //
-const calculate = new Calculate();
 
 class API {
+    
+    
+    calculate;
+
+    PROJECT_ID = null;
     ACTIVE_SPRINT_ID = -1;
+    
+    constructor(projectId){
+        // console.log(projectId + " api *************************************")
+        this.PROJECT_ID = projectId;
+        this.calculate = new Calculate(projectId);
+        console.log(`project id api ${this.PROJECT_ID} ******************`);
+
+    }
+
 
     //low level api's
     async getActiveSprintId() {
@@ -154,7 +167,7 @@ class API {
     // top level api's
     async getMetrics() {
         const issues = await this.getAllIssues();
-        const metrics = await calculate.progressTrackerMetrics(issues);
+        const metrics = await this.calculate.progressTrackerMetrics(issues);
         // console.log(metrics);
         return metrics;
     }
@@ -162,14 +175,14 @@ class API {
     async getIssueAndRecommendatation(issueId) {
         const allAssignedIssues = await this.getAllUnassignedOrAssignedIssues(false);
         const requestedIssueData = await this.getIssue(issueId);
-        const result = await calculate.generateUserIssueRecommendations(allAssignedIssues, requestedIssueData);
+        const result = await this.calculate.generateUserIssueRecommendations(allAssignedIssues, requestedIssueData);
         return result;
     }
 
     async getStandupDetails() {
         const allIssues = await this.getAllUnassignedOrAssignedIssues(false);
 
-        let insights = await calculate.progressTrackerMetrics(allIssues, false, true);
+        let insights = await this.calculate.progressTrackerMetrics(allIssues, false, true);
         let standupDetails = await storage.get('standupDetails');
         
         if(insights['error'] != undefined){
@@ -198,6 +211,7 @@ class API {
         }
 
         const result = {
+            timelimit : 12, //by default
             issues: allIssues,
             insights: Array.from(insights.values()),
             standupDetails: standupDetails ? standupDetails : null
@@ -208,7 +222,7 @@ class API {
 
     async setStandupDetails(issueId, key, accountId, payload) {
         const {updateType, message} = payload;
-        const result = await calculate.setStandupDetails(issueId, key,  accountId, updateType, message);
+        const result = await this.calculate.setStandupDetails(issueId, key,  accountId, updateType, message);
 
         return result;
     }
@@ -247,10 +261,11 @@ class API {
         return 0;
     }
 
-    async getCurrentBoardId(projectId){
+    async getCurrentBoardId(){
+
         let allBoards = await this.getAllBoards();
 
-        const currentBoards = allBoards.filter(board => board.location.projectId == projectId);
+        const currentBoards = allBoards.filter(board => board.location.projectId == 10000);
         //taking board id of the 0 index project filter result...
         if(allBoards)
             return currentBoards[0].id;
