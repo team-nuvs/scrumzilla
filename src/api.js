@@ -2,10 +2,6 @@ import { storage } from '@forge/api';
 import api, { route } from "@forge/api";
 
 import Calculate from './calculation';
-import { result } from 'lodash';
-
-
-//
 
 class API {
     

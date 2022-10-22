@@ -102,12 +102,12 @@ resolver.define('setStandupDetails', async (req)=>{
     const projectId = req.context.extension.project.id;
 
     try{
-        const customApi = new API(projectId);
-
+        
         const issueId = req.context.extension.issue.id;
         const key = req.context.extension.issue.key;
         const {accountId} = req.context;
         
+        const customApi = new API(projectId);
         const result =await customApi.setStandupDetails(issueId, key, accountId, req.payload);
         return result;
     }
