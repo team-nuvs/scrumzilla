@@ -17,7 +17,7 @@ class Config {
             [
                 this.checkAndUpdateFields(),
                 this.checkAndUpdateActiveSprintData(projectId),
-                this.checkAndUpdateActiveSprintUsers()
+                this.checkAndUpdateActiveSprintUsers(projectId)
             ]
         ).then(res=>{
             console.log("config : checkAndUpdate completed.")
@@ -29,15 +29,15 @@ class Config {
     }
 
     //reset
-    async resetAllStoredData(){
+    async resetAllStoredData(projectId){
         await Promise.all([
-            storage.delete('activeSprintId'),
-            storage.delete('STORYPOINT_FIELDNAME'),
-            storage.delete('defaultSprintpoint'),
-            storage.delete('userData'),
-            storage.delete('sprintStorypoint'),
-            storage.delete('standupDetails')
-        ]).then(res=>console.log("config : reset all data."));
+            storage.delete('activeSprintId'+projectId),
+            storage.delete('STORYPOINT_FIELDNAME'+projectId),
+            storage.delete('defaultSprintpoint'+projectId),
+            storage.delete('userData'+projectId),
+            storage.delete('sprintStorypoint'+projectId),
+            storage.delete('standupDetails'+projectId),
+        ]).then(res=>console.log("config : reset all data. for project "+projectId));
         return 1;
     }
     // low level 
@@ -46,7 +46,7 @@ class Config {
         //todo dynamic board id / project id. make api call >filter project id (from payload.)
         const currentBoardId = await customApi.getCurrentBoardId(projectId);
         console.log(`current board id ${currentBoardId}`);
-        let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${this.BOARD_ID}/sprint`, {
+        let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${currentBoardId}/sprint`, {
             headers: {
                 'Accept': 'application/json'
             }
@@ -55,12 +55,12 @@ class Config {
         let allSprints = await response.json();
         let ApiActiveSprintId = _.filter(allSprints.values, { state: 'active' })[0].id;
 
-        let storedActiveSprintId = await storage.get('activeSprintId');
+        let storedActiveSprintId = await storage.get('activeSprintId'+projectId);
 
         if (storedActiveSprintId != ApiActiveSprintId) {
-            storage.set('activeSprintId', ApiActiveSprintId);
+            storage.set('activeSprintId'+projectId, ApiActiveSprintId);
 
-            let storedUserData = await storage.get('userData');
+            let storedUserData = await storage.get('userData'+projectId);
 
             if(storedActiveSprintId != undefined){
 
@@ -68,25 +68,25 @@ class Config {
                     user.totalSprints++;
                 });
                 
-                await storage.set('userData', storedUserData);
+                await storage.set('userData'+projectId, storedUserData);
             }
                 
             console.log(`config : new sprint id ${ApiActiveSprintId} and storedUserData updated!`);
         }
 
-        let defaultSP = await storage.get('defaultStorypoint');
+        let defaultSP = await storage.get('defaultStorypoint'+projectId);
         if(!defaultSP){
-            await this.updateDefaultStorypoint(20);
+            await this.updateDefaultStorypoint(12,projectId);
             console.log("config - sprint storypoint limit set to 20 (default).");
         }
         return 1;
     }
 
-    async checkAndUpdateActiveSprintUsers() {
+    async checkAndUpdateActiveSprintUsers(projectId) {
         console.log(`config : checkAndUpdateActiveSprintUsers()...`);
 
         let users = await customApi.getSprintUsers();
-        let storageUser = await storage.get('userData');
+        let storageUser = await storage.get('userData'+projectId);
 
         
         if (storageUser == undefined) {
@@ -104,7 +104,7 @@ class Config {
                 newStorageUser.push(mockUserData);
             });
 
-            await storage.set('userData',newStorageUser);
+            await storage.set('userData'+projectId,newStorageUser);
             console.log(`config : new - userData added / usercount - ${newStorageUser.length}` );
             return 1;
 
@@ -136,7 +136,7 @@ class Config {
 
             });
 
-            await storage.set('userData',updatedStorageUser);
+            await storage.set('userData'+projectId,updatedStorageUser);
             console.log('config - storage userData updated.');
             return 1;
         }
@@ -145,8 +145,8 @@ class Config {
         return 0;
     }
     
-    async updateDefaultStorypoint(value){
-        await storage.set('defaultStorypoint',value);
+    async updateDefaultStorypoint(value,projectId){
+        await storage.set('defaultStorypoint'+projectId,value);
         return 1;
     }
 
