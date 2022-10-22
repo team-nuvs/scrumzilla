@@ -229,6 +229,33 @@ class API {
         await storage.delete(key);
         return {deleted : true, message : "hope you know what you are doing."};
     }
+
+    async getAllBoards(){
+        let response = await api.asApp().requestJira(
+            route`/rest/agile/1.0/board`
+        )
+
+        if(response.statusText == "OK"){
+            response = await response.json();
+            return response.values;
+        }
+
+        return 0;
+    }
+
+    async getCurrentBoardId(projectId){
+        let allBoards = await this.getAllBoards();
+
+        const currentBoards = allBoards.filter(board => board.location.projectId == projectId);
+        //taking board id of the 0 index project filter result...
+        if(allBoards)
+            return currentBoards[0].id;
+        
+        console.log("~ api - getCurrentBoardId");
+        return -1;
+    }
+
+
 }
 
 export default API;

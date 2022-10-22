@@ -12,15 +12,20 @@ class Config {
     BOARD_ID = 1;
 
     //top level
-    async checkAndUpdate(){
-        await Promise.all(
+    async checkAndUpdate(projectId){
+        const checkStatus = await Promise.all(
             [
                 this.checkAndUpdateFields(),
-                this.checkAndUpdateActiveSprintData(),
+                this.checkAndUpdateActiveSprintData(projectId),
                 this.checkAndUpdateActiveSprintUsers()
             ]
-        ).then(res=>console.log("config : checkAndUpdate completed."))
-        return 1;
+        ).then(res=>{
+            console.log("config : checkAndUpdate completed.")
+            if(res[0] != 1)
+                return res[0];
+            return 1;
+        })
+        return checkStatus;
     }
 
     //reset
@@ -36,9 +41,11 @@ class Config {
         return 1;
     }
     // low level 
-    async checkAndUpdateActiveSprintData() {
+    async checkAndUpdateActiveSprintData(projectId) {
         console.log(`config : checkAndUpdateActiveSprintData()...`);
         //todo dynamic board id / project id. make api call >filter project id (from payload.)
+        const currentBoardId = await customApi.getCurrentBoardId(projectId);
+        console.log(`current board id ${currentBoardId}`);
         let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${this.BOARD_ID}/sprint`, {
             headers: {
                 'Accept': 'application/json'
@@ -165,10 +172,11 @@ class Config {
                 return 1;
             }
             console.log("~ config : labels are not present in the field!");
-            return 1;
+            return {error : "Make sure Lables are present in the issue fields!"};
         }
         
         console.log("~ config : story point fields is not present in the field!");
+        return {error : "Make sure Story Point Estimation and Labels are present in the issue fields!"};
         return 1;
     }
 }

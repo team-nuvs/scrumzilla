@@ -20,14 +20,16 @@ resolver.define('getText',  async (req) => {
 
 //home
 resolver.define("getProgressMetrics" , async (req)=>{
-    console.log("GET - progress metrics");
     // await config.resetAllStoredData();
     const projectId = req.context.extension.project.id;
-    
-    await config.checkAndUpdate();
 
-    const data = await customApi.getMetrics();
-    return data;
+    console.log(`GET - progress metrics for ${projectId}`);
+    const checkStatus = await config.checkAndUpdate(projectId);
+    if(checkStatus==1){
+        const data = await customApi.getMetrics();
+        return data;   
+    }
+    return checkStatus;
 })
 
 resolver.define("getIssueData" , async (req)=>{
@@ -121,8 +123,13 @@ resolver.define("deleteStorageData", async (req)=>{
 
 /**
  * test case to fix
+ * add raise message error > CHECK FOR EACH ISSUE IF NOT FOUND THEN RAISE ERROR
  *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?
  * enable sprint?? test
+ * 
+ * check customfield name>
+ *  create label first and then sp
+ *  create sp first and then lable
  */
 export const handler = resolver.getDefinitions();
 
