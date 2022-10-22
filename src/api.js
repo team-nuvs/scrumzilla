@@ -171,6 +171,10 @@ class API {
 
         let insights = await calculate.progressTrackerMetrics(allIssues, false, true);
         let standupDetails = await storage.get('standupDetails');
+        
+        if(insights['error'] != undefined){
+            return insights;
+        }
 
         //sorting on the basis of blockers ONLY ON THE LATEST (TODAY) STANDUP!!!
         

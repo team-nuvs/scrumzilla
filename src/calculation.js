@@ -21,14 +21,32 @@ class Calculate {
 
         let insights = new Map();
 
+
+        //response error if storypoint & label not present
+        let errorJson ={
+            key : null,
+            summary : null,
+            error : null,
+        }
+
         const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
-        issues.forEach(issue => {
+        issues.some(issue => {
 
             const statusName = issue.fields.status.name;
             metrics.sprintStorypoint += issue.fields[STORYPOINT_FIELDNAME];
 
             if (statusName == "To Do") metrics.todo++;
             if (statusName == "Done") metrics.done++;
+
+            //checking error boundary
+            if(issue.fields[STORYPOINT_FIELDNAME] == null || !issue.fields.labels.length){
+                errorJson.error = "Story Point Estimation or Label fields are missing",
+                errorJson.key = issue.key;
+                errorJson.summary = issue.fields.summary;
+                console.log(`! warning - sp or label in issue ${issue.key}`);
+                return 1;
+            }
+
             if (issue.fields.assignee == null) {
                 metrics.unassigned++;
                 unassignedIssues.push(this.convertIssueToLimitedData(issue,STORYPOINT_FIELDNAME));
@@ -72,6 +90,9 @@ class Calculate {
             }
 
         });
+
+
+        if(errorJson.error != null) return errorJson;
 
         let storedCurrentStoryPoint = -1;
         if (!unassignedIssues && userInsightsMapOnly){
