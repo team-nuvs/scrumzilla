@@ -27,6 +27,8 @@ class Config {
             console.log("config : checkAndUpdate completed.")
             if(res[0] != 1)
                 return res[0];
+            if(res[1] != 1)
+                return res[1];
             return 1;
         })
         return checkStatus;
@@ -57,6 +59,11 @@ class Config {
         });
 
         let allSprints = await response.json();
+
+        if(allSprints.values.length == 0){
+            return {error : "Create Sprint in the current project to continue."};
+        }
+
         let ApiActiveSprintId = _.filter(allSprints.values, { state: 'active' })[0].id;
 
         let storedActiveSprintId = await storage.get('activeSprintId'+`_${this.PROJECT_ID}`);

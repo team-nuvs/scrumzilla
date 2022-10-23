@@ -203,8 +203,9 @@ class API {
             standupDetails[0] = currentStandup;
         }
 
+        const standupTimelimit = await storage.get("standupTimelimit"+`_${this.PROJECT_ID}`);
         const result = {
-            timelimit : 12, //by default
+            timelimit : standupTimelimit ? standupTimelimit : 12, //by default
             issues: allIssues,
             insights: Array.from(insights.values()),
             standupDetails: standupDetails ? standupDetails : null
@@ -265,6 +266,11 @@ class API {
         
         console.log("~ api - getCurrentBoardId");
         return -1;
+    }
+
+    async setStandupTimelimit(timeInMinutes){
+        await storage.set("standupTimelimit" + `_${this.PROJECT_ID}`,timeInMinutes);
+        return 1;
     }
 
 

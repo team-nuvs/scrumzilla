@@ -159,20 +159,29 @@ resolver.define("deleteStorageData", async (req)=>{
     return response;
 })
 
+resolver.define('setStandupDetailsTimelimit' , async (req)=>{
+    const projectId = req.context.extension.project.id;
+
+    console.log(`SET - Standup Time for ${projectId}`);
+    const customApi = new API(projectId);
+    await customApi.setStandupTimelimit(req.payload.timeInMinutes);
+    return {message : "Standup Timelimit updated successfully"};
+})
+
 
 /**
- * test case to fix
- * no issues found error
- * change dynamic board id in config
- * label score percentage fix
- * todo : project timer.
- * add raise message error > CHECK FOR EACH ISSUE IF NOT FOUND THEN RAISE ERROR
- *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?
- * enable sprint?? test
- * 
+ * test case to check & fix
+ *  
  * check customfield name>
  *  create label first and then sp
  *  create sp first and then lable
+ * 
+ * frontend - 
+ * no unassigned issues  - home
+ * issue sp & label missing - modal - with enable instructions...
+ * enable sprint - home
+ * settings - standup timer > notes 
+ * label percentage change
  */
 export const handler = resolver.getDefinitions();
 
