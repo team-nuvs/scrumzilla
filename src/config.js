@@ -13,7 +13,6 @@ class Config {
     constructor(projectId){
         this.customApi = new API(projectId)
         this.PROJECT_ID = projectId;
-        console.log(`project id config ${this.PROJECT_ID} ******************`);
     }
 
     //top level
@@ -51,7 +50,6 @@ class Config {
         //todo dynamic board id / project id. make api call >filter project id (from payload.)
         const currentBoardId = await this.customApi.getCurrentBoardId();
 
-        console.log(`current board id ${currentBoardId}`);
         let response = await api.asApp().requestJira(route`/rest/agile/1.0/board/${currentBoardId}/sprint`, {
             headers: {
                 'Accept': 'application/json'

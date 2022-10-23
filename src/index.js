@@ -66,15 +66,17 @@ resolver.define("getUserData" , async (req)=>{
 
 resolver.define("getStorypoint" , async (req)=>{
     console.log("GET - stored storypoint");
-
     const projectId = req.context.extension.project.id;
     let sp = await storage.get('sprintStorypoint'+`_${projectId}`);
     let defaultSP = await storage.get('defaultStorypoint'+`_${projectId}`)
     let sprintID = await storage.get('activeSprintId'+`_${projectId}`)
 
+    const customApi = new API(projectId);
+    let boardId = await customApi.getCurrentBoardId();
 
     const result = {
         projectId : projectId,
+        boardId : boardId,
         sp : sp,
         sprintSPLimit : defaultSP,
         sprintID : sprintID
@@ -160,7 +162,9 @@ resolver.define("deleteStorageData", async (req)=>{
 
 /**
  * test case to fix
+ * no issues found error
  * change dynamic board id in config
+ * label score percentage fix
  * todo : project timer.
  * add raise message error > CHECK FOR EACH ISSUE IF NOT FOUND THEN RAISE ERROR
  *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?

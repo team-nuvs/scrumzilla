@@ -10,7 +10,6 @@ class Calculate {
     
     constructor(projectId){
         this.PROJECT_ID = projectId; 
-        console.log(`project id calculate ${this.PROJECT_ID} ******************`);
     }
 
     async progressTrackerMetrics(issues, trackUnassignedIssues = true, userInsightsMapOnly = false) {
@@ -38,68 +37,71 @@ class Calculate {
         }
 
         const STORYPOINT_FIELDNAME = await storage.get('STORYPOINT_FIELDNAME');
-        issues.some(issue => {
 
-            const statusName = issue.fields.status.name;
-            metrics.sprintStorypoint += issue.fields[STORYPOINT_FIELDNAME];
+        if(Array.isArray(issues))
+            issues.some(issue => {
 
-            if (statusName == "To Do") metrics.todo++;
-            if (statusName == "Done") metrics.done++;
+                const statusName = issue.fields.status.name;
+                metrics.sprintStorypoint += issue.fields[STORYPOINT_FIELDNAME];
 
-            //checking error boundary
-            if(issue.fields[STORYPOINT_FIELDNAME] == null || !issue.fields.labels.length){
-                errorJson.error = "Story Point Estimation or Label fields are missing",
-                errorJson.key = issue.key;
-                errorJson.summary = issue.fields.summary;
-                console.log(`! warning - sp or label in issue ${issue.key}`);
-                return 1;
-            }
+                if (statusName == "To Do") metrics.todo++;
+                if (statusName == "Done") metrics.done++;
 
-            if (issue.fields.assignee == null) {
-                metrics.unassigned++;
-                unassignedIssues.push(this.convertIssueToLimitedData(issue,STORYPOINT_FIELDNAME));
-            }
-            else {
-                //insights
-                let assignee = issue.fields.assignee;
+                //checking error boundary
+                if(issue.fields[STORYPOINT_FIELDNAME] == null || !issue.fields.labels.length){
+                    errorJson.error = "Story Point Estimation or Label fields are missing",
+                    errorJson.key = issue.key;
+                    errorJson.summary = issue.fields.summary;
+                    console.log(`! warning - sp or label in issue ${issue.key}`);
+                    return 1;
+                }
 
-                if (insights.has(assignee.accountId)) {
-                    let accountIdData = insights.get(assignee.accountId);
-
-                    accountIdData.progress.total++;
-                    if (statusName == "To Do") accountIdData.progress.todo++;
-                    if (statusName == "Done") accountIdData.progress.done++;
-
-                    accountIdData.storypoint.sprintTotal += issue.fields[STORYPOINT_FIELDNAME];
-
-                    //update data
-                    insights.set(assignee.accountId, accountIdData);
+                if (issue.fields.assignee == null) {
+                    metrics.unassigned++;
+                    unassignedIssues.push(this.convertIssueToLimitedData(issue,STORYPOINT_FIELDNAME));
                 }
                 else {
-                    //new hashmap
+                    //insights
+                    let assignee = issue.fields.assignee;
 
-                    const defaultInsightsMetrics = {
-                        accountId: assignee.accountId,
-                        displayName: assignee.displayName,
-                        avatarUrl: assignee.avatarUrls['48x48'],
-                        storypoint: {
-                            sprintTotal: issue.fields[STORYPOINT_FIELDNAME]
-                        },
-                        progress: {
-                            total: 1,
-                            todo: statusName == "To Do" ? 1 : 0,
-                            done: statusName == "Done" ? 1 : 0
-                        }
-                    };
+                    if (insights.has(assignee.accountId)) {
+                        let accountIdData = insights.get(assignee.accountId);
 
-                    insights.set(assignee.accountId, defaultInsightsMetrics);
+                        accountIdData.progress.total++;
+                        if (statusName == "To Do") accountIdData.progress.todo++;
+                        if (statusName == "Done") accountIdData.progress.done++;
 
+                        accountIdData.storypoint.sprintTotal += issue.fields[STORYPOINT_FIELDNAME];
+
+                        //update data
+                        insights.set(assignee.accountId, accountIdData);
+                    }
+                    else {
+                        //new hashmap
+
+                        const defaultInsightsMetrics = {
+                            accountId: assignee.accountId,
+                            displayName: assignee.displayName,
+                            avatarUrl: assignee.avatarUrls['48x48'],
+                            storypoint: {
+                                sprintTotal: issue.fields[STORYPOINT_FIELDNAME]
+                            },
+                            progress: {
+                                total: 1,
+                                todo: statusName == "To Do" ? 1 : 0,
+                                done: statusName == "Done" ? 1 : 0
+                            }
+                        };
+
+                        insights.set(assignee.accountId, defaultInsightsMetrics);
+
+                    }
                 }
-            }
 
-        });
-
-
+            });
+        else
+            return {message : "No issues found..."}
+        
         if(errorJson.error != null) return errorJson;
 
         let storedCurrentStoryPoint = -1;

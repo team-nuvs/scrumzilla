@@ -12,11 +12,8 @@ class API {
     ACTIVE_SPRINT_ID = -1;
     
     constructor(projectId){
-        // console.log(projectId + " api *************************************")
         this.PROJECT_ID = projectId;
         this.calculate = new Calculate(projectId);
-        console.log(`project id api ${this.PROJECT_ID} ******************`);
-
     }
 
 
@@ -176,7 +173,7 @@ class API {
     }
 
     async getStandupDetails() {
-        const allIssues = await this.getAllUnassignedOrAssignedIssues(false);
+        const allIssues = await this.getAllIssues();
 
         let insights = await this.calculate.progressTrackerMetrics(allIssues, false, true);
         let standupDetails = await storage.get('standupDetails'+`_${this.PROJECT_ID}`);
@@ -261,7 +258,7 @@ class API {
 
         let allBoards = await this.getAllBoards();
 
-        const currentBoards = allBoards.filter(board => board.location.projectId == 10000);
+        const currentBoards = allBoards.filter(board => board.location.projectId == this.PROJECT_ID);
         //taking board id of the 0 index project filter result...
         if(allBoards)
             return currentBoards[0].id;
