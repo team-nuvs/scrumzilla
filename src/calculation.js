@@ -104,12 +104,12 @@ class Calculate {
 
         let storedCurrentStoryPoint = -1;
         if (!unassignedIssues && userInsightsMapOnly){
-            storedCurrentStoryPoint = await storage.get("sprintStorypoint")
+            storedCurrentStoryPoint = await storage.get("sprintStorypoint"+`_${this.PROJECT_ID}`)
         }else{
-            storedCurrentStoryPoint = await storage.set("sprintStorypoint",metrics.sprintStorypoint)
+            storedCurrentStoryPoint = await storage.set("sprintStorypoint"+`_${this.PROJECT_ID}`,metrics.sprintStorypoint)
         }
         
-        const storedUserData = await storage.get('userData')
+        const storedUserData = await storage.get('userData'+`_${this.PROJECT_ID}`)
 
         const customAPI = new API(this.PROJECT_ID);
         let allUsers = await customAPI.getSprintUsers();
@@ -238,7 +238,7 @@ class Calculate {
                     message : null
                 };
                 
-                const DEFAULT_STORYPOINT_PER_SPRINT = await storage.get('defaultStorypoint');
+                const DEFAULT_STORYPOINT_PER_SPRINT = await storage.get('defaultStorypoint'+`_${this.PROJECT_ID}`);
 
                 if(currentSprintTotalSP > DEFAULT_STORYPOINT_PER_SPRINT){
                     sprintLimit.remark = "Over Assigned";
@@ -304,7 +304,7 @@ class Calculate {
 
         await Promise.all([
             this.progressTrackerMetrics(allAssignedIssues,false, true),
-            storage.get('userData'),
+            storage.get('userData'+`_${this.PROJECT_ID}`),
         ]).then(res => {
            usersInsights = res[0],
            previousSPDataAllUsers = res[1]; 
@@ -378,7 +378,7 @@ class Calculate {
     }
 
     async setStandupDetails(issueId, key, accountId, updateType, message){
-        let standupDetails = await storage.get("standupDetails");
+        let standupDetails = await storage.get("standupDetails"+`_${this.PROJECT_ID}`);
         const standupId = this.generateTodaysDateCode();
         
         let defaultDSStructure = {
@@ -444,7 +444,7 @@ class Calculate {
                 
                 standupDetails[activeDSIndex] = activeDS;
 
-                await storage.set("standupDetails",standupDetails);
+                await storage.set("standupDetails"+`_${this.PROJECT_ID}`,standupDetails);
 
                 console.log(`calc - setStandupDetails() for ${standupId} updated.`);
                 return { updated : true };
@@ -469,12 +469,12 @@ class Calculate {
         if(standupDetails != undefined){
             // adding DS code first time.
             standupDetails.unshift(defaultDSStructure)
-            await storage.set("standupDetails",standupDetails);
+            await storage.set("standupDetails"+`_${this.PROJECT_ID}`,standupDetails);
             console.log(`calc - setStandupDetails() for ${standupId} created and updated for ${accountId}. (new standup)`);
         }
         else{
             // first time storage DS added
-            await storage.set("standupDetails", [defaultDSStructure]);
+            await storage.set("standupDetails"+`_${this.PROJECT_ID}`, [defaultDSStructure]);
             console.log(`calc - setStandupDetails() for ${standupId} created and updated for ${accountId}. (config.)`);
 
         }
