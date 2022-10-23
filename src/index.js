@@ -60,7 +60,7 @@ resolver.define("getUserData" , async (req)=>{
 
     const projectId = req.context.extension.project.id;
 
-    const userData = await storage.get('userData');
+    const userData = await storage.get('userData'+`_${projectId}`);
     return userData;
 })
 
@@ -68,12 +68,13 @@ resolver.define("getStorypoint" , async (req)=>{
     console.log("GET - stored storypoint");
 
     const projectId = req.context.extension.project.id;
-    let sp = await storage.get('sprintStorypoint');
-    let defaultSP = await storage.get('defaultStorypoint')
-    let sprintID = await storage.get('activeSprintId')
+    let sp = await storage.get('sprintStorypoint'+`_${projectId}`);
+    let defaultSP = await storage.get('defaultStorypoint'+`_${projectId}`)
+    let sprintID = await storage.get('activeSprintId'+`_${projectId}`)
 
 
     const result = {
+        projectId : projectId,
         sp : sp,
         sprintSPLimit : defaultSP,
         sprintID : sprintID
