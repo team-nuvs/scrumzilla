@@ -23,7 +23,7 @@ class API {
     //low level api's
     async getActiveSprintId() {
         if (this.ACTIVE_SPRINT_ID == -1) {
-            this.ACTIVE_SPRINT_ID = await storage.get('activeSprintId');
+            this.ACTIVE_SPRINT_ID = await storage.get('activeSprintId'+`_${this.PROJECT_ID}`);
         }
         return this.ACTIVE_SPRINT_ID;
     }
@@ -103,7 +103,7 @@ class API {
     }
 
     async updateUserData(accountId, label, issueStorypoint) {
-        let userData = await storage.get('userData');
+        let userData = await storage.get('userData'+`_${this.PROJECT_ID}`);
 
         let userIndex = userData.findIndex(user => user.accountId == accountId);
 
@@ -115,7 +115,7 @@ class API {
 
         userData[userIndex].totalIssuesAssigned++;
         userData[userIndex].total_storypoints += issueStorypoint;
-        await storage.set('userData', userData);
+        await storage.set('userData'+`_${this.PROJECT_ID}`, userData);
         return 1;
     }
 
@@ -179,7 +179,7 @@ class API {
         const allIssues = await this.getAllUnassignedOrAssignedIssues(false);
 
         let insights = await this.calculate.progressTrackerMetrics(allIssues, false, true);
-        let standupDetails = await storage.get('standupDetails');
+        let standupDetails = await storage.get('standupDetails'+`_${this.PROJECT_ID}`);
         
         if(insights['error'] != undefined){
             return insights;
@@ -224,7 +224,7 @@ class API {
     }
 
     async setStandupDetailsNotes(standupId, notes){
-        let standupDetails = await storage.get("standupDetails");
+        let standupDetails = await storage.get("standupDetails"+`_${this.PROJECT_ID}`);
 
         let currentStandupDetailsIndex = standupDetails.findIndex(details => details.standupId == standupId);
         let currentStandupDetails = standupDetails[currentStandupDetailsIndex];
@@ -233,14 +233,14 @@ class API {
 
         standupDetails[currentStandupDetailsIndex] = currentStandupDetails;
 
-        await storage.set("standupDetails",standupDetails);
+        await storage.set("standupDetails"+`_${this.PROJECT_ID}`,standupDetails);
 
         return {updated : true};
 
     }
 
     async deleteStorageData(key){
-        await storage.delete(key);
+        await storage.delete(key+`_${this.PROJECT_ID}`);
         return {deleted : true, message : "hope you know what you are doing."};
     }
 
