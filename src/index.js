@@ -159,6 +159,7 @@ resolver.define("deleteStorageData", async (req)=>{
 
 /**
  * test case to fix
+ * change dynamic board id in config
  * todo : project timer.
  * add raise message error > CHECK FOR EACH ISSUE IF NOT FOUND THEN RAISE ERROR
  *  modal pop up to show label & storypoint missing fields > first time launch welcome screen?
