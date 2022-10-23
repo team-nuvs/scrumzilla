@@ -137,7 +137,7 @@ class API {
         );
         if (response.statusText = "OK") {
             response = await response.json();
-            return response.filter(user => user["accountType"] == "atlassian");
+            return response.filter(user => (user["accountType"] == "atlassian" && user.active == true));
         }
         console.log("~ api : failed - getSprintUser()");
         return 0;
