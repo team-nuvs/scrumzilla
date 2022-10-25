@@ -7,27 +7,36 @@ import Lozenge from "@atlaskit/lozenge";
 import "./issueTable.css";
 import { percentageOfTasks } from "./helpers/percentageOfTasks";
 import Tooltip from "@atlaskit/tooltip";
+import { invoke } from "@forge/bridge";
 
 const IssueModalTable = (props) => {
-  const { recommendations, compareWith, addFlag, setFlagContent } = props ?? {};
+  const { recommendations, compareWith, addFlag, setFlagContent, issueID } =
+    props ?? {};
   const totalLabelScore = recommendations?.reduce(
     (userA, userB) => userA.labelScore + userB.labelScore
   );
-  const setAssignee = (name) => {
-    const err = false;
-    setFlagContent({
-      title:"Assignee was set successfully!",
-      description: `${name} was set as an assignee.`,
-      condition: true
-    })
-    if (err) {
-      setFlagContent({
-        title: "Assignee could not be set!",
-        description: `The functionality failed because of: Network Error`,
-        condition: false,
-      });
-    }
-    addFlag();
+  const setAssignee = (user) => {
+    invoke("setAssignee", {
+      assigneeId: user?.accountId,
+      issueId: issueID,
+    }).then((data) => {
+      console.log(data);
+      if (data) {
+        setFlagContent({
+          title: "Assignee was set successfully!",
+          description: `${user?.displayName} was set as an assignee.`,
+          condition: true,
+        });
+        addFlag();
+      } else {
+        setFlagContent({
+          title: "Assignee could not be set!",
+          description: `The functionality failed because of: Network Error`,
+          condition: false,
+        });
+        addFlag();
+      }
+    });
   };
   return (
     <Table borderless responsive className="text-start">
@@ -43,10 +52,10 @@ const IssueModalTable = (props) => {
       </thead>
       <tbody>
         {recommendations?.map((user, index) => {
-          const labelScore =
-            totalLabelScore === 0
-              ? 0
-              : percentageOfTasks(totalLabelScore, user?.labelScore);
+          const labelScore = user?.labelScore
+            // totalLabelScore === 0
+            //   ? 0
+            //   : percentageOfTasks(totalLabelScore, user?.labelScore);
           const userAssignmentStatus =
             user?.storypoint?.remarkCompareWith[`${compareWith}`];
           const assignmentSeverity = userAssignmentStatus?.remark
@@ -55,7 +64,7 @@ const IssueModalTable = (props) => {
             ? true
             : false;
           return (
-            <tr key={index} style={{fontSize:"14px"}}>
+            <tr key={index} style={{ fontSize: "14px" }}>
               <td>
                 <div className="d-flex align-items-center">
                   <Avatar
@@ -107,7 +116,7 @@ const IssueModalTable = (props) => {
                   }}
                   appearance="primary"
                   onClick={(e) => {
-                    setAssignee(user?.displayName);
+                    setAssignee(user);
                   }}
                 >
                   Set as Assignee

@@ -21,6 +21,8 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import MoreIcon from "@atlaskit/icon/glyph/more";
 import Spinner from "@atlaskit/spinner";
+import { invoke } from "@forge/bridge";
+import SectionMessage from "@atlaskit/section-message";
 import "./dailyStandupPage.css";
 
 function DailyStandup() {
@@ -31,6 +33,7 @@ function DailyStandup() {
     description: "One minute remains in current standup",
   });
   const [standupData, setStandupData] = useState();
+  const [appError, setAppError] = useState();
   const [standupNotes, setStandupNotes] = useState();
   const [index, setIndex] = useState(0);
   const [userIndex, setUserIndex] = useState(0);
@@ -38,9 +41,18 @@ function DailyStandup() {
   const [update, setUpdate] = useState();
   const [onTimerComplete, setTimerComplete] = useState(false);
   useEffect(() => {
-    setTimeout(() => {
-      setStandupData(dailyStandup.root);
-    }, 1); //API
+    invoke("getStandupDetails").then((data) => {
+      if (data?.standupDetails) {
+        setStandupData(data);
+      } else {
+        setAppError({
+          error: "No app updates to show !",
+        });
+      }
+    });
+    // setTimeout(() => {
+    //   setStandupData(dailyStandup.root);
+    // }, 1); //API
   }, []);
 
   const { issues, insights, standupDetails } = standupData ?? {};
@@ -48,6 +60,13 @@ function DailyStandup() {
   const insightsSorted = currStandup?.user?.map((user) =>
     insights.find((insight) => insight.accountId === user.accountId)
   );
+
+  const onComplete = () => {
+    invoke("setStandupDetailsNotes", {
+      standupId: currStandup?.standupId,
+      notes: standupNotes,
+    }).then((data) => console.log(data)); // flag not there
+  };
 
   const optionCreated =
     standupDetails?.map((standup, index) => ({
@@ -87,13 +106,13 @@ function DailyStandup() {
           <img
             style={{ height: "16px", width: "16px" }}
             className="ms-2"
-            src={issueDisplay.fields.issuetype.iconUrl}
-            alt={`${issueDisplay.fields.issuetype.name}`}
+            src={issueDisplay?.fields.issuetype.iconUrl}
+            alt={`${issueDisplay?.fields.issuetype.name}`}
           />
           <div
             className="ms-1"
             style={{ fontSize: "14px", color: "#0052cc", fontWeight: "500" }}
-          >{`${issueDisplay.key} – ${issueDisplay.fields.summary}`}</div>
+          >{`${issueDisplay?.key} – ${issueDisplay?.fields.summary}`}</div>
         </div>
         <div style={{ paddingLeft: "44px" }}>{issuesUpdate.message}</div>
       </div>
@@ -101,7 +120,17 @@ function DailyStandup() {
   };
 
   console.log("userInsight", userInsight, "update", update);
-  return standupData ? (
+  return appError?.error ? (
+    <SectionMessage title="App Launch Failed !" appearance="error">
+      {appError?.key && (
+        <div
+          className="my-1"
+          style={{ fontSize: "16px", fontWeight: "500" }}
+        >{`Error due to issue: ${appError?.key} – ${appError?.summary}`}</div>
+      )}
+      <div>{appError?.error}</div>
+    </SectionMessage>
+  ) : standupData ? (
     <div style={{ width: "95%" }}>
       <FlagGroup onDismissed={handleDismiss}>
         {showFlag && (
@@ -149,6 +178,7 @@ function DailyStandup() {
                 className="ms-3"
                 style={{ fontSize: "14px" }}
                 appearance="primary"
+                onClick={onComplete}
               >
                 Complete
               </Button>
@@ -235,12 +265,11 @@ function DailyStandup() {
                         <Button
                           iconBefore={<ArrowLeftIcon label="" size="medium" />}
                           appearance="subtle"
+                          isDisabled={userIndex === 0}
                           onClick={() => {
                             console.log(userIndex);
 
-                            setUserIndex((userIndex) =>
-                              userIndex > 0 ? userIndex - 1 : userIndex
-                            );
+                            setUserIndex((userIndex) => userIndex - 1);
                           }}
                         >
                           Previous
@@ -248,13 +277,18 @@ function DailyStandup() {
                         <Button
                           iconAfter={<ArrowRightIcon label="" size="medium" />}
                           appearance="subtle"
-                          onClick={() =>
-                            setUserIndex((userIndex) =>
-                              userIndex < optionCreated.length-1
-                                ? userIndex + 1
-                                : userIndex
-                            )
+                          isDisabled={
+                            userIndex === currStandup?.user?.length - 1
                           }
+                          onClick={() => {
+                            console.log(
+                              "userIndex",
+                              userIndex,
+                              "standup-length",
+                              currStandup?.user?.length
+                            );
+                            setUserIndex((userIndex) => userIndex + 1);
+                          }}
                           className="ms-2"
                         >
                           Next
@@ -414,7 +448,7 @@ function DailyStandup() {
                       >
                         Extend time by 5 minutes
                       </Button>
-                      <Button className="buttonText mx-2">
+                      <Button className="buttonText mx-2" onClick={onComplete}>
                         End the Daily Stand-Up
                       </Button>
                     </div>
@@ -455,7 +489,7 @@ function DailyStandup() {
                   }}
                 >
                   <RichText
-                    defaultText={standupNotes}
+                    defaultText={currStandup?.notes}
                     onChange={(value) => {
                       setStandupNotes(value);
                     }}

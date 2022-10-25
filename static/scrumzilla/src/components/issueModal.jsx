@@ -18,6 +18,7 @@ import { token } from "@atlaskit/tokens";
 import { AutoDismissFlag, FlagGroup } from "@atlaskit/flag";
 import Spinner from "@atlaskit/spinner";
 import { useParams } from "react-router-dom";
+import { invoke } from "@forge/bridge";
 import "./issueModal.css";
 const IssueHeaders = styled.div`
   margin-right: 20px;
@@ -42,7 +43,7 @@ const DescriptionBox = styled.div`
 
 const IssueModal = () => {
   const [issueData, setIssueData] = useState();
-  const { issue, recommendations } = issueData?.root ?? {};
+  const { issue, recommendations } = issueData ?? {};
   const [showFlag, setShowFlag] = useState(false);
   const [flagContent, setFlagContent] = useState({
     title: "Assignee was set successfully!",
@@ -55,10 +56,10 @@ const IssueModal = () => {
     value: "allUser",
   });
   useEffect(() => {
-    console.log(issueID);
-    setTimeout(() => {
-      setIssueData(issueModalData);
-    }, 1); //API
+    invoke('getIssueData', { issueId: issueID }).then((data) => {console.log(data);setIssueData(data);});
+    // setTimeout(() => {
+    //   setIssueData(issueModalData);
+    // }, 1); //API
   }, []);
 
   const addFlag = () => {
@@ -220,6 +221,7 @@ const IssueModal = () => {
                     compareWith={compareWith.value}
                     addFlag={addFlag}
                     setFlagContent={setFlagContent}
+                    issueID={issueID}
                   />
                 </Card>
               </Card>

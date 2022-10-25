@@ -9,7 +9,7 @@ import { G300, R400 } from "@atlaskit/theme/colors";
 import { token } from "@atlaskit/tokens";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import { invoke } from "@forge/bridge";
+import { invoke } from "@forge/bridge";
 import "./App.css";
 function App() {
   const [updateType, setUpdateType] = useState();
@@ -40,27 +40,42 @@ function App() {
     font-weight: normal;
     color: #6b778c;
   `;
-  //   useEffect(() => {
-  //   invoke("getText", { example: "my-invoke-variable" }).then((data) => {
-  //     console.log(data);
-  //     setData(data);
-  //   });
-  // }, []);
+
   const submitUpdates = () => {
-    if (updateType && textareaValue) {
-      setSucessMessage({
-        icon: (
-          <SuccessIcon
-            primaryColor={token("color.icon.success", G300)}
-            label="Success"
-            size="small"
-          />
-        ),
-        color: G300,
-        message: "Submitted your updates !",
+    if (updateType?.value && textareaValue) {
+      invoke("setStandupDetails", {
+        updateType: updateType?.value,
+        message: textareaValue,
+      }).then((data) => {
+        console.log(data);
+        if (data?.updated) {
+          setSucessMessage({
+            icon: (
+              <SuccessIcon
+                primaryColor={token("color.icon.success", G300)}
+                label="Success"
+                size="small"
+              />
+            ),
+            color: G300,
+            message: "Submitted your updates !",
+          });
+          setUpdateType(null);
+          setTextAreaValue("");
+        } else {
+          setSucessMessage({
+            icon: (
+              <ErrorIcon
+                label="Error"
+                primaryColor={token("color.icon.danger", R400)}
+                size="small"
+              />
+            ),
+            color: R400,
+            message: "Error in submission of updates, please try again later!",
+          });
+        }
       });
-      setUpdateType(null);
-      setTextAreaValue("");
     } else {
       setSucessMessage({
         icon: (

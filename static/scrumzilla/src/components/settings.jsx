@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import LoadingButton from "@atlaskit/button/loading-button";
 import TextField from "@atlaskit/textfield";
 import { useParams } from "react-router-dom";
+import { invoke } from "@forge/bridge";
 
 import Form, {
   ErrorMessage,
@@ -29,13 +30,22 @@ const Settings = () => {
         iconBefore={<ArrowLeftIcon label="" size="medium" />}
         appearance="subtle"
         component={Link}
-        to={Number.parseInt(settingType)===0?"/":"/daily-standup"}
+        to={Number.parseInt(settingType) === 0 ? "/" : "/daily-standup"}
       >
         Back
       </Button>
       <Form
         onSubmit={(data) => {
           console.log("form data", data);
+          if (data?.sprint_limit) {
+            invoke("setDefaultStorypoint", {
+              value: data?.sprint_limit,
+            }).then((data) => console.log("Saved!!!", data));
+          } else if (data?.standup_time_limit) {
+            invoke("setStandupDetailsTimelimit", {
+              timeInMinutes: data?.standup_time_limit,
+            }).then((data) => console.log("Saved!!!", data));
+          }
         }}
       >
         {({ formProps, submitting }) => (
