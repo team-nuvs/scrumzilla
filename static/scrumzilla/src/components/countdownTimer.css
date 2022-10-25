@@ -1,0 +1,17 @@
+.timeProgress span{
+    background-color: #0052cc;
+}
+.timer-controls button {
+    height: 25px;
+    padding: 0;
+}
+
+.timer-controls svg rect {
+    width: 16px;
+    height: 16px;
+    fill: #FF5630;
+}
+
+.play svg path {
+    fill: #36B37E;
+}

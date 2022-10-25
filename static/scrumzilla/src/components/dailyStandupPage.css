@@ -1,0 +1,15 @@
+.image {
+  background: rgba(0, 0, 0, 0);
+}
+button.buttonText span {
+    color: #FFFFFF !important;
+}
+button.buttonText{
+    background-color: #5243AA;
+}
+button.textWhite{
+  color: #FFFFFF !important;
+}
+button.textWhite:hover{
+  color: #FFFFFF !important;
+}
