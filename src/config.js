@@ -183,11 +183,11 @@ class Config {
                 return 1;
             }
             console.log("~ config : labels are not present in the field!");
-            return {error : "Make sure Lables are present in the issue fields!"};
+            return {key:"",summary:"",error : "Make sure Lables are present in the issue fields! Go to Board > Configure Board > Issue Types > (drag and drop) Labels on desired issue type > Save."};
         }
         
         console.log("~ config : story point fields is not present in the field!");
-        return {error : "Make sure Story Point Estimation and Labels are present in the issue fields!"};
+        return {key:"", summary: "", error : "Make sure Story Point Estimation and Labels are present in the issue fields! Go to Board > Configure Board > Issue Types > (drag and drop) Story Point estimation and Labels on desired issue type > Save."};
         return 1;
     }
 }
