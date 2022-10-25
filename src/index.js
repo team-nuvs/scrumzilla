@@ -169,20 +169,6 @@ resolver.define('setStandupDetailsTimelimit' , async (req)=>{
 })
 
 
-/**
- * test case to check & fix
- *  
- * check customfield name>
- *  create label first and then sp
- *  create sp first and then lable
- * 
- * frontend - 
- * no unassigned issues  - home
- * issue sp & label missing - modal - with enable instructions...
- * enable sprint - home
- * settings - standup timer > notes 
- * label percentage change
- */
 export const handler = resolver.getDefinitions();
 
  

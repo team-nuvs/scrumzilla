@@ -93,3 +93,26 @@ users:{
         }
     }
 }
+/**
+ * test case to check & fix
+ * Go to Backlog > click on Create sprint > add or create issues > click on Start sprint.
+ * Go to Board > Configure Board > Issue Types > (drag and drop) story Point estimation and Labels on desired issue type.
+ * 
+ * ui change font, margin, with values
+ *  
+ * check customfield name>
+ *  create label first and then sp
+ *  create sp first and then lable
+ * 
+ * frontend - 
+ * 1 min warning - on complete - complete card show. purple
+ * no unassigned issues  - home
+ * sprintLimit 
+ * issue sp & label missing - modal - with enable instructions...
+ * enable sprint - home
+ * settings - standup timer > notes 
+ * notes add placeholder, remove heading tools, 
+ * hover and mouse pointer on people card - daily standup 
+ * label percentage change
+ * previous data change to SELF > null check first sprint
+ */
