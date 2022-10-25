@@ -13,10 +13,10 @@ const UserInsightCard = (props) => {
   const { total, todo, progress } = userInsight?.progress ?? {};
   const userAssignmentStatus =
     userInsight?.storypoint?.remarkCompareWith[`${compareWith}`];
-  const assignmentSeverity = userAssignmentStatus.remark
-    .toUpperCase()
-    .includes("OVER")
-    ? true
+  const assignmentSeverity = userAssignmentStatus?.remark
+    ? userAssignmentStatus.remark.toUpperCase().includes("OVER")
+      ? true
+      : false
     : false;
   const userTodo = percentageOfTasks(total, todo);
   const userProgress = percentageOfTasks(total, progress);
@@ -27,7 +27,7 @@ const UserInsightCard = (props) => {
     <Card
       style={{
         padding: "10px",
-        borderColor:"#f5f5f6"
+        borderColor: "#f5f5f6",
       }}
       className={!minimal ? "mt-2 p-3 " : "mt-2 hover"}
       onClick={() => props?.onClickChangeUser(props?.id_)}
@@ -88,9 +88,7 @@ const UserInsightCard = (props) => {
       )}
       {!minimal && (
         <Row>
-          <Col xs={6}
-          className="d-flex align-items-end"
-          >
+          <Col xs={6} className="d-flex align-items-end">
             <div
               className="text-start ms-3 mt-2 d-flex align-items-end"
               style={{ fontSize: "12px", fontWeight: "500" }}

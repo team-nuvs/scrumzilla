@@ -15,32 +15,34 @@ import { percentageOfTasks } from "./helpers/percentageOfTasks";
 import SectionMessage from "@atlaskit/section-message";
 import "./homePage.css";
 import { Link } from "react-router-dom";
+import { invoke } from "@forge/bridge";
 
 const HomePage = (props) => {
   const [userEmpData, setEmpData] = useState();
   const [appError, setAppError] = useState();
   useEffect(() => {
-    if (false) {
-      setAppError(errorHomePageData.root);
-    } else
-      setTimeout(() => {
-        setEmpData(userAllocationHomePage);
-      }, 1); //API
+    invoke('getProgressMetrics', { example: 'my-invoke-variable' }).then((data) => {
+      if(data?.error){
+        setAppError(data)
+      }else{
+        setEmpData(data)
+      }
+    })
   }, []);
   const { total, todo, progress, assigned } =
-    userEmpData?.root?.sprintProgress ?? {};
+    userEmpData?.sprintProgress ?? {};
   let issuesAssigned = 0;
   let issuesNotAssigned = 0;
   let issueTodo = 0;
   let issueProgress = 0;
   let issueDone = 0;
-  const issueList = !!userEmpData?.root?.unAssignedIssues
-    ? userEmpData?.root?.unAssignedIssues
+  const issueList = !!userEmpData?.unAssignedIssues
+    ? userEmpData?.unAssignedIssues
     : [];
-  const userInsights = !!userEmpData?.root?.usersInsights
-    ? userEmpData?.root?.usersInsights
+  const userInsights = !!userEmpData?.usersInsights
+    ? userEmpData?.usersInsights
     : [];
-  if (!!userEmpData?.root?.sprintProgress) {
+  if (!!userEmpData?.sprintProgress) {
     issuesAssigned = percentageOfTasks(total, assigned);
     issuesNotAssigned = 100 - issuesAssigned;
     issueTodo = percentageOfTasks(total, todo);
