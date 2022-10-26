@@ -168,6 +168,32 @@ resolver.define('setStandupDetailsTimelimit' , async (req)=>{
     return {message : "Standup Timelimit updated successfully"};
 })
 
+resolver.define("getAnnouncement", async(req)=>{
+    const announcement = {
+        visible : true,
+        message : "Checkout out the scrumzilla's walk-through video!",
+        buttonText : "Link",
+        link : "https://youtube.com"
+    }
+
+    return announcement;
+})
+
+resolver.define("getProjectSettingData" , async (req)=>{
+    console.log("GET - project setting data");
+    
+    const projectId = req.context.extension.project.id;
+
+    const timelimit = await storage.get("standupTimelimit" + `_${projectId}`)
+    const storyPoint = await storage.get("defaultStorypoint" + `_${projectId}`)
+
+    const setting ={
+        timelimit : timelimit? timelimit : 12,
+        defaultStoryPoint : storyPoint
+    }
+    return setting;
+})
+
 
 export const handler = resolver.getDefinitions();
 
