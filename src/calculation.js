@@ -105,7 +105,7 @@ class Calculate {
         if(errorJson.error != null) return errorJson;
 
         let storedCurrentStoryPoint = -1;
-        if (!unassignedIssues && userInsightsMapOnly){
+        if (!trackUnassignedIssues && userInsightsMapOnly){
             storedCurrentStoryPoint = await storage.get("sprintStorypoint"+`_${this.PROJECT_ID}`)
         }else{
             storedCurrentStoryPoint = await storage.set("sprintStorypoint"+`_${this.PROJECT_ID}`,metrics.sprintStorypoint)
@@ -147,7 +147,7 @@ class Calculate {
             //update
                 accountIdData.storypoint = await this.generateStorypointRemark(
                     storedUserData, accountIdData, 
-                    (!unassignedIssues && userInsightsMapOnly)
+                    (!trackUnassignedIssues && userInsightsMapOnly)
                     ? storedCurrentStoryPoint
                     : metrics.sprintStorypoint
                 )
