@@ -42,7 +42,7 @@ function App() {
   `;
 
   const submitUpdates = () => {
-    if (updateType?.value && textareaValue) {
+    if (updateType?.value) {
       invoke("setStandupDetails", {
         updateType: updateType?.value,
         message: textareaValue,

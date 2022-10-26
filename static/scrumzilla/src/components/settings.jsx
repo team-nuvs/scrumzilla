@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Button from "@atlaskit/button";
 import ArrowLeftIcon from "@atlaskit/icon/glyph/arrow-left";
 import { Link } from "react-router-dom";
 import LoadingButton from "@atlaskit/button/loading-button";
 import TextField from "@atlaskit/textfield";
 import { useParams } from "react-router-dom";
-import { invoke } from "@forge/bridge";
+import { invoke, view } from "@forge/bridge";
 
 import Form, {
   ErrorMessage,
@@ -18,6 +18,17 @@ import Form, {
 
 const Settings = () => {
   const { settingType } = useParams();
+  const [settingData, setSettingData] = useState();
+  useEffect(() => {
+    invoke("getProjectSettingData", { example: "my-invoke-variable" }).then(
+      (data) => {
+        if (data) {
+          setSettingData(data);
+          console.log(data);
+        }
+      }
+    );
+  }, []);
   return (
     <div
       style={{
@@ -35,16 +46,23 @@ const Settings = () => {
         Back
       </Button>
       <Form
-        onSubmit={(data) => {
+        onSubmit={async (data) => {
           console.log("form data", data);
+          const history = await view.createHistory();
           if (data?.sprint_limit) {
             invoke("setDefaultStorypoint", {
               value: data?.sprint_limit,
-            }).then((data) => console.log("Saved!!!", data));
+            }).then((data) => {
+              console.log("Saved!!!", data);
+              history.push("/");
+            });
           } else if (data?.standup_time_limit) {
             invoke("setStandupDetailsTimelimit", {
               timeInMinutes: data?.standup_time_limit,
-            }).then((data) => console.log("Saved!!!", data));
+            }).then((data) => {
+              console.log("Saved!!!", data);
+              history.push("/daily-standup");
+            });
           }
         }}
       >
@@ -58,7 +76,7 @@ const Settings = () => {
                   name="sprint_limit"
                   label="Sprint Limit"
                   isRequired
-                  defaultValue="8"
+                  defaultValue={settingData?.defaultStoryPoint}
                   validate={(value) =>
                     value && isNaN(value) ? "Insert numbers only" : undefined
                   }
@@ -85,7 +103,7 @@ const Settings = () => {
                   name="standup_time_limit"
                   label="Standup Time Limit"
                   isRequired
-                  defaultValue="15"
+                  defaultValue={settingData?.timelimit}
                   validate={(value) =>
                     value && isNaN(value) ? "Insert only numbers" : undefined
                   }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Col, Row, Card, CardBody } from "reactstrap";
+import Tooltip from "@atlaskit/tooltip";
 import "./homePage.css";
 function ProgressDisplay(props) {
   const emphasis = props.emphasized;
@@ -27,10 +28,15 @@ function ProgressDisplay(props) {
                 backgroundColor: emphasis ? "#FFFFFF" : "#00000000",
               }}
             >
-              <CardBody className="tab py-1">
-                <p className="tab-header">To do</p>
-                {`${props.issueTodo}%`}
-              </CardBody>
+              <Tooltip
+                position="bottom-start"
+                content={`To do: ${props?.todo}`}
+              >
+                <CardBody className="tab py-1">
+                  <p className="tab-header">To do</p>
+                  {`${props.issueTodo}%`}
+                </CardBody>
+              </Tooltip>
             </Card>
           </Col>
           <Col xs={4} className="middle-padding rounded-2">
@@ -42,10 +48,15 @@ function ProgressDisplay(props) {
                 backgroundColor: emphasis ? "#FFFFFF" : "#00000000",
               }}
             >
-              <CardBody className="tab py-1">
-                <p className="tab-header">Progress</p>
-                {`${props.issueProgress}%`}
-              </CardBody>
+              <Tooltip
+                position="bottom-start"
+                content={`Progress: ${props?.progress}`}
+              >
+                <CardBody className="tab py-1">
+                  <p className="tab-header">Progress</p>
+                  {`${props.issueProgress}%`}
+                </CardBody>
+              </Tooltip>
             </Card>
           </Col>
           <Col xs={4} className="middle-padding rounded-2">
@@ -55,13 +66,14 @@ function ProgressDisplay(props) {
                 color: "#00875A",
                 border: "none",
                 backgroundColor: emphasis ? "#FFFFFF" : "#00000000",
-
               }}
             >
-              <CardBody className="tab py-1">
-                <p className="tab-header">Done</p>
-                {`${props.issueDone}%`}
-              </CardBody>
+              <Tooltip position="bottom-start" content={`Done: ${props?.done}`}>
+                <CardBody className="tab py-1">
+                  <p className="tab-header">Done</p>
+                  {`${props.issueDone}%`}
+                </CardBody>
+              </Tooltip>
             </Card>
           </Col>
         </Row>

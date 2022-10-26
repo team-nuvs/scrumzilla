@@ -10,7 +10,7 @@ import "./userInsightsCard.css";
 
 const UserInsightCard = (props) => {
   const { userInsight, compareWith, minimal } = props ?? {};
-  const { total, todo, progress } = userInsight?.progress ?? {};
+  const { total, todo, progress, done } = userInsight?.progress ?? {};
   const userAssignmentStatus =
     userInsight?.storypoint?.remarkCompareWith[`${compareWith}`];
   const assignmentSeverity = userAssignmentStatus?.remark
@@ -53,6 +53,9 @@ const UserInsightCard = (props) => {
                   issueDone={userDone}
                   issueTodo={userTodo}
                   issueProgress={userProgress}
+                  todo={todo}
+                  progress={progress}
+                  done={done}
                 />
               </Col>
             </Row>
@@ -61,16 +64,23 @@ const UserInsightCard = (props) => {
         {!minimal && (
           <Col xs={4}>
             <div className="float-end">
-              <Tooltip
-                position="bottom-start"
-                content={userAssignmentStatus?.message}
-              >
-                <Lozenge
-                  appearance={assignmentSeverity ? "removed" : "success"}
+              {userAssignmentStatus?.message &&
+              userAssignmentStatus?.remark &&
+              userAssignmentStatus?.remark !== "" &&
+              userAssignmentStatus?.message !== "" ? (
+                <Tooltip
+                  position="bottom-start"
+                  content={userAssignmentStatus?.message}
                 >
-                  {userAssignmentStatus?.remark}
-                </Lozenge>
-              </Tooltip>
+                  <Lozenge
+                    appearance={assignmentSeverity ? "removed" : "success"}
+                  >
+                    {userAssignmentStatus?.remark}
+                  </Lozenge>
+                </Tooltip>
+              ) : (
+                <div>–</div>
+              )}
             </div>
           </Col>
         )}
@@ -82,6 +92,9 @@ const UserInsightCard = (props) => {
               issueDone={userDone}
               issueTodo={userTodo}
               issueProgress={userProgress}
+              todo={todo}
+              progress={progress}
+              done={done}
             />
           </Col>
         </Row>

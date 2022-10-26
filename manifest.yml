@@ -16,9 +16,10 @@ modules:
       handler: index.handler
 resources:
   - key: main
-    path: static/scrumzilla/build
     tunnel:
       port: 3000
+    path: static/scrumzilla/build
+    
   - key: activity
     path: static/scrum-updates/build
 app:
@@ -37,6 +38,9 @@ permissions:
   content:
     styles:
       - 'unsafe-inline'
+    scripts:
+      - unsafe-inline
+
   external:
     images:
       - 'https://*.atlassian.net'

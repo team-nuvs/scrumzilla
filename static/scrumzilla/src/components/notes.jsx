@@ -44,7 +44,7 @@ const RichText = (props) => {
         props?.onChange(quillRef.current.firstChild.innerHTML);
       });
     }
-  }, [quill]);
+  }, [quill, props?.defaultText]);
 
   return (
     <div style={{ height: 300, border: "none" }}>

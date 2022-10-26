@@ -7,7 +7,8 @@ import Lozenge from "@atlaskit/lozenge";
 import "./issueTable.css";
 import { percentageOfTasks } from "./helpers/percentageOfTasks";
 import Tooltip from "@atlaskit/tooltip";
-import { invoke } from "@forge/bridge";
+import { invoke, view } from "@forge/bridge";
+import async from "react-select/async";
 
 const IssueModalTable = (props) => {
   const { recommendations, compareWith, addFlag, setFlagContent, issueID } =
@@ -15,7 +16,8 @@ const IssueModalTable = (props) => {
   const totalLabelScore = recommendations?.reduce(
     (userA, userB) => userA.labelScore + userB.labelScore
   );
-  const setAssignee = (user) => {
+  const setAssignee = async (user) => {
+    const history = await view.createHistory();
     invoke("setAssignee", {
       assigneeId: user?.accountId,
       issueId: issueID,
@@ -28,6 +30,7 @@ const IssueModalTable = (props) => {
           condition: true,
         });
         addFlag();
+        history.push("/");
       } else {
         setFlagContent({
           title: "Assignee could not be set!",
@@ -52,10 +55,10 @@ const IssueModalTable = (props) => {
       </thead>
       <tbody>
         {recommendations?.map((user, index) => {
-          const labelScore = user?.labelScore
-            // totalLabelScore === 0
-            //   ? 0
-            //   : percentageOfTasks(totalLabelScore, user?.labelScore);
+          const labelScore = user?.labelScore;
+          // totalLabelScore === 0
+          //   ? 0
+          //   : percentageOfTasks(totalLabelScore, user?.labelScore);
           const userAssignmentStatus =
             user?.storypoint?.remarkCompareWith[`${compareWith}`];
           const assignmentSeverity = userAssignmentStatus?.remark
@@ -96,16 +99,21 @@ const IssueModalTable = (props) => {
               </td>
               <td className="text-left">{`${labelScore}`}</td>
               <td>
-                <Tooltip
-                  position="bottom-start"
-                  content={userAssignmentStatus?.message}
-                >
-                  <Lozenge
-                    appearance={assignmentSeverity ? "removed" : "success"}
-                  >
-                    {userAssignmentStatus?.remark}
-                  </Lozenge>
-                </Tooltip>
+                {userAssignmentStatus?.message &&
+                  userAssignmentStatus?.remark &&
+                  userAssignmentStatus?.remark!=="" &&
+                  userAssignmentStatus?.message!=="" ? (
+                    <Tooltip
+                      position="bottom-start"
+                      content={userAssignmentStatus?.message}
+                    >
+                      <Lozenge
+                        appearance={assignmentSeverity ? "removed" : "success"}
+                      >
+                        {userAssignmentStatus?.remark}
+                      </Lozenge>
+                    </Tooltip>
+                  ) : <div>–</div>}
               </td>
               <td>
                 <Button

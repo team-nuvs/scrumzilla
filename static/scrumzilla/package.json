@@ -18,6 +18,7 @@
     "@atlaskit/lozenge": "^11.2.4",
     "@atlaskit/media-core": "^34.0.0",
     "@atlaskit/modal-dialog": "^12.4.0",
+    "@atlaskit/onboarding": "^10.6.0",
     "@atlaskit/progress-bar": "^0.5.11",
     "@atlaskit/renderer": "^102.0.0",
     "@atlaskit/select": "^15.7.3",

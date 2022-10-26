@@ -20,12 +20,13 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from "@atlaskit/dropdown-menu";
 import MoreIcon from "@atlaskit/icon/glyph/more";
+import TaskIcon from "@atlaskit/icon/glyph/task";
 import Spinner from "@atlaskit/spinner";
-import { invoke } from "@forge/bridge";
+import { invoke, router, view } from "@forge/bridge";
 import SectionMessage from "@atlaskit/section-message";
 import "./dailyStandupPage.css";
 
-function DailyStandup() {
+function DailyStandup(props) {
   const [numberOfMinutes, setNumberOfMinutes] = useState(1);
   const [showFlag, setShowFlag] = useState(false);
   const [flagContent, setFlagContent] = useState({
@@ -43,7 +44,9 @@ function DailyStandup() {
   useEffect(() => {
     invoke("getStandupDetails").then((data) => {
       if (data?.standupDetails) {
+        console.log(data);
         setStandupData(data);
+        setNumberOfMinutes(Number.parseFloat(data?.timelimit));
       } else {
         setAppError({
           error: "No app updates to show !",
@@ -61,11 +64,17 @@ function DailyStandup() {
     insights.find((insight) => insight.accountId === user.accountId)
   );
 
-  const onComplete = () => {
+  const onComplete = async () => {
+    const history = await view.createHistory();
     invoke("setStandupDetailsNotes", {
       standupId: currStandup?.standupId,
       notes: standupNotes,
-    }).then((data) => console.log(data)); // flag not there
+    }).then((data) => {
+      if (data) {
+        console.log(data);
+        history.push("/");
+      }
+    }); // flag not there
   };
 
   const optionCreated =
@@ -102,19 +111,29 @@ function DailyStandup() {
     );
     return (
       <div className="py-2">
-        <div className="d-flex align-items-center ps-3">
-          <img
-            style={{ height: "16px", width: "16px" }}
-            className="ms-2"
-            src={issueDisplay?.fields.issuetype.iconUrl}
-            alt={`${issueDisplay?.fields.issuetype.name}`}
-          />
-          <div
-            className="ms-1"
-            style={{ fontSize: "14px", color: "#0052cc", fontWeight: "500" }}
-          >{`${issueDisplay?.key} – ${issueDisplay?.fields.summary}`}</div>
-        </div>
-        <div style={{ paddingLeft: "44px" }}>{issuesUpdate.message}</div>
+        {issueDisplay ? (
+          <div className="d-flex align-items-center ps-3">
+            <img
+              style={{ height: "16px", width: "16px" }}
+              className="ms-2"
+              src={issueDisplay?.fields.issuetype.iconUrl}
+              alt={`${issueDisplay?.fields.issuetype.name}`}
+            />
+            <div
+              className="ms-1"
+              style={{ fontSize: "14px", color: "#0052cc", fontWeight: "500" }}
+            >{`${issueDisplay?.key} – ${issueDisplay?.fields.summary}`}</div>
+          </div>
+        ) : (
+          <div className="d-flex align-items-center ps-3">
+            <TaskIcon size="small" className="ms-2" />
+            <div
+              className="ms-1"
+              style={{ fontSize: "14px", color: "#0052cc", fontWeight: "500" }}
+            >{`${issuesUpdate?.key}`}</div>
+          </div>
+        )}
+        <div style={{ paddingLeft: "44px" }}>{issuesUpdate?.message}</div>
       </div>
     );
   };

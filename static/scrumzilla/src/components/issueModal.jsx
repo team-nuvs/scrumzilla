@@ -148,7 +148,7 @@ const IssueModal = () => {
               <IssueHeaders>Reporter</IssueHeaders>
               <Avatar
                 appearance="circle"
-                src={issue?.reporter?.avatarUrls["16x16"]}
+                src={issue?.reporter?.avatarUrls["48x48"]}
                 name={issue?.reporter?.displayName}
                 size={"small"}
               />
