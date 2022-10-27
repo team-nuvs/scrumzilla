@@ -20,11 +20,17 @@ import scrumPng from "../assets/scrum.png";
 import { Link } from "react-router-dom";
 import { invoke, router } from "@forge/bridge";
 import "./homePage.css";
+import szLogo from '../assets/sz-logo.png';
+
 const HomePage = (props) => {
   const [userEmpData, setEmpData] = useState();
   const [appError, setAppError] = useState();
   const [adOpen, isAdOpen] = useState(true);
+  const [addData, setAddData] = useState(null);
+
   useEffect(() => {
+    invoke("getAnnouncement").then(setAddData);
+    
     invoke("getProgressMetrics", { example: "my-invoke-variable" }).then(
       (data) => {
         if (data?.error) {
@@ -63,18 +69,18 @@ const HomePage = (props) => {
   return (
     <div style={{ width: "95%" }}>
       <FlagGroup onDismissed={handleDismiss}>
-        {adOpen && (
+        {adOpen && addData && addData?.visible && (
           <AutoDismissFlag
             icon={
               <InfoIcon label="Info" size="medium" primaryColor="#0052CC" />
             }
-            title={` Hola`}
-            description="I will auto dismiss after 8 seconds"
+            title={addData?.title}
+            description={addData?.message}
             actions={[
               {
-                content: "See here !",
+                content: `${addData?.buttonText}`,
                 onClick: () => {
-                  router.open("https://youtube.com");
+                  router.open(`${addData?.link}`);
                 },
               },
             ]}
@@ -216,6 +222,7 @@ const HomePage = (props) => {
           style={{ width: "95%", height: "80vh" }}
           className="d-flex justify-content-center align-items-center"
         >
+          <img src={szLogo} alt="logo" className="sz-logo"/>
           <Spinner size={"large"} />
         </div>
       )}

@@ -171,6 +171,7 @@ resolver.define('setStandupDetailsTimelimit' , async (req)=>{
 resolver.define("getAnnouncement", async(req)=>{
     const announcement = {
         visible : true,
+        title:"hello world",
         message : "Checkout out the scrumzilla's walk-through video!",
         buttonText : "Link",
         link : "https://youtube.com"

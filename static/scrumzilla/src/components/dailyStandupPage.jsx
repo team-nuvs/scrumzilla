@@ -25,6 +25,7 @@ import Spinner from "@atlaskit/spinner";
 import { invoke, router, view } from "@forge/bridge";
 import SectionMessage from "@atlaskit/section-message";
 import "./dailyStandupPage.css";
+import szLogo from '../assets/sz-logo.png';
 
 function DailyStandup(props) {
   const [numberOfMinutes, setNumberOfMinutes] = useState(1);
@@ -525,6 +526,7 @@ function DailyStandup(props) {
       style={{ width: "95%", height: "80vh" }}
       className="d-flex justify-content-center align-items-center"
     >
+      <img src={szLogo} alt="logo" className="sz-logo"/>
       <div>
         <Spinner size={"large"} />
       </div>

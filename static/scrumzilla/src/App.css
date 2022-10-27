@@ -50,3 +50,9 @@ img {
     transform: rotate(360deg);
   }
 }
+
+.sz-logo{
+  width: 1%;
+  position: absolute;
+  height: auto;
+}

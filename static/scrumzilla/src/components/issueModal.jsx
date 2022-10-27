@@ -20,6 +20,8 @@ import Spinner from "@atlaskit/spinner";
 import { useParams } from "react-router-dom";
 import { invoke } from "@forge/bridge";
 import "./issueModal.css";
+import szLogo from '../assets/sz-logo.png';
+
 const IssueHeaders = styled.div`
   margin-right: 20px;
   font-weight: 600;
@@ -235,6 +237,7 @@ const IssueModal = () => {
       style={{ width: "95%", height: "80vh" }}
       className="d-flex justify-content-center align-items-center"
     >
+      <img src={szLogo} alt="logo" className="sz-logo"/>
       <div>
         <Spinner size={"large"} />
       </div>

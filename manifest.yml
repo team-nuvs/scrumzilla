@@ -4,13 +4,14 @@ modules:
       resource: main
       resolver:
         function: resolver
-      title: Scrumzilla-backend
+      title: Scrumzilla
+      icon: src/icons/favicon.ico
   jira:issueActivity:
     - key: my-updates-hello-world
       resource: activity
       resolver:
         function: resolver
-      title: "My Updates backend"
+      title: "My Updates"
   function:
     - key: resolver
       handler: index.handler
