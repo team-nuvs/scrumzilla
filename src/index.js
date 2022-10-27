@@ -51,6 +51,7 @@ resolver.define("setAssignee" , async (req)=>{
     const {assigneeId} = req.payload;
     const {issueId} = req.payload;
     const response = await customApi.setAssignee(issueId,assigneeId);
+    console.log('Issue',JSON.stringify(response));
     // const response = await customApi.getMetrics();
     return response;
 })
@@ -101,7 +102,6 @@ resolver.define('setDefaultStorypoint', async (req)=>{
 resolver.define('setStandupDetails', async (req)=>{
 
     console.log(`SET - standup Details` );
-
     const projectId = req.context.extension.project.id;
 
     try{

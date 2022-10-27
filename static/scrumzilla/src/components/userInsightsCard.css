@@ -1,0 +1,14 @@
+.md-d-block {
+  display: block;
+}
+
+.hover:hover {
+  background-color: #F4F5F7;
+  cursor: pointer;
+}
+
+@media (min-width: 748px) and (max-width: 950px) {
+  .md-d-block {
+    display: none;
+  }
+}

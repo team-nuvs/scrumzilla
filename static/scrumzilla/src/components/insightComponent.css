@@ -1,0 +1,14 @@
+.compare-select {
+    width: 55%;
+    display: inline-block;
+    margin-right: 0;
+    margin-left: 5px;
+}
+.user-select__option{
+    text-align: start;
+}
+
+.card-title{
+    font-weight: 500;
+    font-size: 16px;
+}

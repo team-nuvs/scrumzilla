@@ -1,25 +1,29 @@
 modules:
   jira:projectPage:
-    - key: product-page
+    - key: scrumzilla-hello-world-project-page
       resource: main
       resolver:
         function: resolver
-      title: scrumzilla-backend
+      title: Scrumzilla  
   jira:issueActivity:
-    - key: issue-activity
-      resource: main
+    - key: my-updates-hello-world
+      resource: activity
       resolver:
         function: resolver
-      viewportSize: medium
       title: "My Updates"
   function:
     - key: resolver
       handler: index.handler
 resources:
   - key: main
-    path: static/sz-frontback-test/build
+    tunnel:
+      port: 3000
+    path: static/scrumzilla/build
+    
+  - key: activity
+    path: static/scrum-updates/build
 app:
-  id: ari:cloud:ecosystem::app/d4fa6075-94d4-4331-8886-54db1038dec4
+  id: ari:cloud:ecosystem::app/37cf66e1-691b-47dc-bea1-86f1c8a8eb61
 permissions:
   scopes:
     - 'write:jira-work'
@@ -31,3 +35,14 @@ permissions:
     - 'read:jql:jira'
     - 'read:issue-details:jira'
     - 'read:jira-user'
+  content:
+    styles:
+      - 'unsafe-inline'
+    scripts:
+      - unsafe-inline
+
+  external:
+    images:
+      - 'https://*.atlassian.net'
+      - 'https://i2.wp.com/'
+      - 'https://api.atlassian.com/'
