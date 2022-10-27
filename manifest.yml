@@ -5,7 +5,7 @@ modules:
       resolver:
         function: resolver
       title: Scrumzilla
-      icon: https://raw.githubusercontent.com/kvnal/atlassian-forge/main/src/icons/favicon.ico?token=GHSAT0AAAAAABZG5PMKJFKMCAZEGM3TF436Y22HPYA
+      icon: https://raw.githubusercontent.com/kvnal/portfolio/gh-pages/api/assets/img/favicon.ico
   jira:issueActivity:
     - key: my-updates-hello-world
       resource: activity
