@@ -35,7 +35,8 @@
     "start": "react-scripts start",
     "build:linux": "rm -rf ./build && react-scripts build",
     "eject": "react-scripts eject",
-    "build:win" : "rmdir /s build && react-scripts build"
+    "build:win" : "rmdir /s build && react-scripts build",
+    "deploy:win" : "rmdir /s build && react-scripts build && cd ../../ && forge deploy"
     },
   "engines": {
     "node": ">=14.0.0 <15.0.0"

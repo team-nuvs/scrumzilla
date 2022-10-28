@@ -48,7 +48,7 @@ function App() {
         message: textareaValue,
       }).then((data) => {
         console.log(data);
-        if (data?.updated) {
+        if (data?.updated || data?.message === "success") {
           setSucessMessage({
             icon: (
               <SuccessIcon

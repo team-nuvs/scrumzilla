@@ -202,7 +202,7 @@ resolver.define("getAnnouncement", async (req) => {
         }
     ];
     
-    let index = Math.floor(Math.random() * (announcement.length + 1));
+    let index = Math.floor(Math.random() * (announcement.length));
     let randomAnnouncement = announcement[index];
     randomAnnouncement['visible'] = false;
     randomAnnouncement['link'] = "https://youtube.com";
