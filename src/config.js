@@ -59,8 +59,8 @@ class Config {
         });
 
         let allSprints = await response.json();
-
-        if(allSprints.values.length == 0){
+        
+        if(allSprints?.errorMessages || allSprints.values.length == 0){
             return {error : "Create Sprint in the current project to continue."};
         }
 
@@ -174,13 +174,13 @@ class Config {
         let fields = await this.customApi.getFields();
         
         let storypointField = fields.filter(field => field.name == "Story point estimate");
-        if(!storypointField.length){
+        if(!storypointField?.length){
             //if not story point estimation then take story point field
             storypointField = fields.filter(field => field.name == "Story Points");
             console.log("config - story point estimation not found story point field is stored.");
         }
 
-        if(storypointField.length){
+        if(storypointField?.length){
             //check for label field
             let label = fields.filter(field => field.name == "Labels");
             if(label.length){
