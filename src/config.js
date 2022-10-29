@@ -61,10 +61,18 @@ class Config {
         let allSprints = await response.json();
         
         if(allSprints?.errorMessages || allSprints.values.length == 0){
+            if(allSprints?.errorMessages) return {error : allSprints.errorMessages}
             return {error : "Create Sprint in the current project to continue."};
         }
 
-        let ApiActiveSprintId = _.filter(allSprints.values, { state: 'active' })[0].id;
+        let ApiActiveSprintId = null;
+        try{
+
+            ApiActiveSprintId = _.filter(allSprints.values, { state: 'active' })[0].id;
+        }
+        catch(err){
+            return {error : "Create Sprint in the current project to continue."};
+        }
 
         let storedActiveSprintId = await storage.get('activeSprintId'+`_${this.PROJECT_ID}`);
 
